@@ -23,6 +23,7 @@ from mathutils import Matrix, Vector
 from mathutils.geometry import intersect_line_plane
 
 from . import core, geometry, interaction
+from .instance_tools import INSTANCE_CLASSES, draw_instance_controls
 
 TARGET_VERSION=(5,2,2)
 STATE_KEY='dbim_p01_state'
@@ -241,6 +242,8 @@ def apply_model(scene,m):
     _BUSY=True
     try:
         _render_scene(scene,m)
+        if old and json.loads(old).get('schema_version')==1 and 'dbim_p01_schema1_backup' not in scene:
+            scene['dbim_p01_schema1_backup']=old
         scene[STATE_KEY]=core.dumps(m)
         scene[ERROR_KEY]=''
     except Exception as exc:
@@ -798,7 +801,7 @@ class DBIM_PT_main(Panel):
 
     def draw(self,context):
         layout=self.layout
-        layout.label(text='P01  ·  v0.1.0  ·  基线 Blender 5.2.2')
+        layout.label(text='P01  ·  v0.2.0  ·  基线 Blender 5.2.2')
         if bpy.app.version!=TARGET_VERSION:
             box=layout.box(); box.alert=True
             box.label(text='当前版本不是验收基线 5.2.2',icon='ERROR')
@@ -819,22 +822,13 @@ class DBIM_PT_main(Panel):
         selected=selected_door_ids(context)
         box=layout.box()
         box.label(text='1  选择实例')
-        row=box.row(align=True)
-        for d in m.doors.values():
+        for index,d in enumerate(m.doors.values()):
+            if index%4==0:
+                row=box.row(align=True)
             op=row.operator('dbim.select_door',text=d.tag,depress=(d.id==did))
             op.door_id=d.id
         box.label(text='选中：'+(', '.join(m.doors[k].tag for k in selected if k in m.doors) or '无'))
-        if did in m.doors:
-            d=m.doors[did]
-            f=m.definitions[d.definition_id]
-            box=layout.box()
-            box.label(text='2  参数与作用范围')
-            box.label(text=f'{d.tag} 门洞宽度：{d.width_mm:g} mm')
-            box.operator('dbim.set_width',text='修改宽度 / 选择影响范围')
-            box.label(text='蓝色箭头：拖动当前门宽度')
-            box.separator()
-            box.label(text=f'共享门框截面：{f.frame_section_mm:g} mm')
-            box.operator('dbim.set_frame',text='统一修改门框（全部实例）')
+        draw_instance_controls(layout,context,m,did)
         box=layout.box()
         box.label(text='3  人工说明与复核')
         box.operator('dbim.add_note',icon='ADD')
@@ -888,7 +882,7 @@ def load_post(_dummy):
 CLASSES=(DBIM_OT_create_demo,DBIM_OT_select_door,DBIM_OT_set_width,DBIM_OT_set_frame,
          DBIM_OT_add_note,DBIM_OT_edit_note,DBIM_OT_confirm_note,DBIM_OT_refresh,
          DBIM_OT_layout,DBIM_OT_view,DBIM_OT_export_svg,DBIM_OT_export_json,
-         DBIM_OT_drag_width,DBIM_GGT_width,DBIM_PT_main)
+         DBIM_OT_drag_width,DBIM_GGT_width,*INSTANCE_CLASSES,DBIM_PT_main)
 
 
 def register():

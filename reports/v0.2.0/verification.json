@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "baseline_commit": "c357243b1b91bfd67771b849b5b4faf93bbfaf9c",
+  "target_blender": "5.2.2",
+  "local_python_tests": 70,
+  "local_python_result": "PASS",
+  "local_compile": "PASS",
+  "svg_generated_and_visually_inspected": true,
+  "blender_runtime_local": "NOT_RUN",
+  "runtime_note": "Remote workstation connections failed. Exact-version CI runtime is separate evidence; inspect its workflow result.",
+  "manual_gui_acceptance": "PENDING",
+  "prior_user_feedback": "v0.1.1 can load; not blanket acceptance of all runtime behavior",
+  "review": "Self-review; no independent reviewer available. Checked migration review state, invalid-edit atomicity, definition sharing, fixed sections, manual note isolation, and stable remote identity."
+}

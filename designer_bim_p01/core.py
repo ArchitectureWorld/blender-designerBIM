@@ -13,7 +13,7 @@ import math
 from typing import Iterable
 from uuid import uuid4
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 class ModelError(ValueError):
@@ -46,6 +46,7 @@ class DoorInstance:
     width_mm: float = 900.0
     height_mm: float = 2100.0
     wall_id: str = 'wall-01'
+    handing: str = 'LEFT'
 
 
 @dataclass(frozen=True)
@@ -96,6 +97,8 @@ def validate(m: Model) -> Model:
     for key, d in m.doors.items():
         if key != d.id or not key or d.definition_id not in m.definitions or d.wall_id != m.wall.id:
             raise ModelError('Invalid definition/host reference / 构件定义或宿主关联无效')
+        if d.handing not in ('LEFT', 'RIGHT'):
+            raise ModelError('Handing must be LEFT or RIGHT / 开向须为左铰或右铰')
         if not d.tag or d.tag in tags:
             raise ModelError('Door tags must be unique')
         tags.add(d.tag)
@@ -139,16 +142,26 @@ def dumps(m: Model) -> str:
 def loads(text: str) -> Model:
     try:
         raw = json.loads(text)
-        if not isinstance(raw, dict) or raw.get('schema_version') != SCHEMA_VERSION:
+        if not isinstance(raw, dict) or raw.get('schema_version') not in (1, SCHEMA_VERSION):
             raise ModelError(f"Unsupported schema {raw.get('schema_version') if isinstance(raw,dict) else '?'}")
         notes = {}
         for key, value in raw['notes'].items():
             value = dict(value)
             value['position_mm'] = tuple(value['position_mm'])
             notes[key] = Note(**value)
-        return validate(Model(raw['schema_version'], raw['revision'], Wall(**raw['wall']),
-                              {k: DoorDefinition(**v) for k, v in raw['definitions'].items()},
-                              {k: DoorInstance(**v) for k, v in raw['doors'].items()}, notes))
+        m = validate(Model(SCHEMA_VERSION, raw['revision'], Wall(**raw['wall']),
+                           {k: DoorDefinition(**v) for k, v in raw['definitions'].items()},
+                           {k: DoorInstance(**v) for k, v in raw['doors'].items()}, notes))
+        if raw['schema_version'] == 1:
+            # Preserve reviewed/stale state, not just text. New defaults must not
+            # turn every previously reviewed annotation into a false warning.
+            migrated = {}
+            for key, note in notes.items():
+                old_signature = signature(m, note.door_id, legacy=True)
+                reviewed = signature(m, note.door_id) if note.reviewed_signature == old_signature else note.reviewed_signature
+                migrated[key] = replace(note, reviewed_signature=reviewed)
+            m = replace(m, notes=migrated)
+        return m
     except ModelError:
         raise
     except (ValueError, TypeError, KeyError, AttributeError) as exc:
@@ -193,9 +206,11 @@ def set_frame_section(m: Model, definition_id: str, value_mm: float) -> Model:
     return validate(replace(m, definitions=definitions, revision=m.revision+1))
 
 
-def signature(m: Model, door_id: str) -> str:
+def signature(m: Model, door_id: str, *, legacy: bool = False) -> str:
     door = m.doors[door_id]
     data = {'instance': asdict(door), 'definition': asdict(m.definitions[door.definition_id]), 'host': asdict(m.wall)}
+    if legacy:
+        data['instance'].pop('handing', None)
     return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:24]
 
 
@@ -239,3 +254,90 @@ def confirm_note(m: Model, note_id: str) -> Model:
     notes = dict(m.notes)
     notes[note_id] = replace(n, reviewed_signature=signature(m, n.door_id))
     return replace(m, notes=notes, revision=m.revision+1)
+
+
+# Instance editing: units are millimetres; positions refer to the wall's left end.
+# These 120 mm gaps are prototype geometry limits, NOT structural/code approval.
+def _door(m: Model, door_id: str) -> DoorInstance:
+    if door_id not in m.doors:
+        raise ModelError('Unknown door / 请先选择有效门实例')
+    return m.doors[door_id]
+
+
+def _replace_door(m: Model, door: DoorInstance) -> Model:
+    if m.doors.get(door.id) == door:
+        return m
+    doors = dict(m.doors)
+    doors[door.id] = door
+    return validate(replace(m, doors=doors, revision=m.revision+1))
+
+
+def next_door_tag(m: Model) -> str:
+    used = {d.tag for d in m.doors.values()}
+    number = max((int(t[1:]) for t in used if t.startswith('D') and t[1:].isdigit()), default=0)+1
+    while f'D{number:02d}' in used:
+        number += 1
+    return f'D{number:02d}'
+
+
+def add_door(m: Model, definition_id: str, center_x_mm: float, *, width_mm: float = 900,
+             height_mm: float = 2100, handing: str = 'LEFT', instance_id: str | None = None) -> Model:
+    if definition_id not in m.definitions:
+        raise ModelError('Unknown shared definition / 组件定义不存在')
+    _finite_positive(center_x_mm, 'center_x_mm')
+    _finite_positive(width_mm, 'width_mm')
+    _finite_positive(height_mm, 'height_mm')
+    key = str(uuid4()) if instance_id is None else instance_id
+    if not isinstance(key, str) or not key or key in m.doors:
+        raise ModelError('Duplicate or invalid instance ID / 实例标识冲突')
+    door = DoorInstance(key, definition_id, next_door_tag(m), float(center_x_mm),
+                        float(width_mm), float(height_mm), m.wall.id, handing)
+    return _replace_door(m, door)
+
+
+def copy_door(m: Model, door_id: str, center_x_mm: float, *, instance_id: str | None = None) -> Model:
+    source = _door(m, door_id)
+    # A new occurrence shares its definition, never the original ID or approvals.
+    return add_door(m, source.definition_id, center_x_mm, width_mm=source.width_mm,
+                    height_mm=source.height_mm, handing=source.handing, instance_id=instance_id)
+
+
+def suggest_center(m: Model, width_mm: float, *, preferred_mm: float | None = None) -> float:
+    _finite_positive(width_mm, 'width_mm')
+    if preferred_mm is not None and (isinstance(preferred_mm, bool) or not isinstance(preferred_mm, (int,float)) or not math.isfinite(preferred_mm)):
+        raise ModelError('Invalid preferred location')
+    half = width_mm/2
+    lower = 120.0
+    candidates = []
+    intervals = sorted((d.center_x_mm-d.width_mm/2, d.center_x_mm+d.width_mm/2) for d in m.doors.values())
+    for left, right in intervals + [(m.wall.length_mm, m.wall.length_mm)]:
+        lo, hi = lower+half, left-120-half
+        if lo <= hi:
+            candidates.append(lo if preferred_mm is None else min(hi, max(lo, preferred_mm)))
+        lower = right+120
+    if not candidates:
+        raise ModelError('No free position for this width / 墙上没有可容纳此门宽的空位')
+    return min(candidates, key=lambda x: (abs(x-preferred_mm), x < preferred_mm, x)) if preferred_mm is not None else candidates[0]
+
+
+def move_door(m: Model, door_id: str, center_x_mm: float) -> Model:
+    _finite_positive(center_x_mm, 'center_x_mm')
+    return _replace_door(m, replace(_door(m, door_id), center_x_mm=float(center_x_mm)))
+
+
+def set_height(m: Model, door_id: str, height_mm: float, *, scope: str = 'INSTANCE',
+               selected_ids: Iterable[str] = ()) -> Model:
+    _finite_positive(height_mm, 'height_mm')
+    ids = affected_ids(m, door_id, scope, selected_ids)
+    if all(m.doors[k].height_mm == height_mm for k in ids):
+        return m
+    doors = dict(m.doors)
+    for key in ids:
+        doors[key] = replace(doors[key], height_mm=float(height_mm))
+    return validate(replace(m, doors=doors, revision=m.revision+1))
+
+
+def set_handing(m: Model, door_id: str, handing: str) -> Model:
+    if handing not in ('LEFT', 'RIGHT'):
+        raise ModelError('Handing must be LEFT or RIGHT / 开向须为左铰或右铰')
+    return _replace_door(m, replace(_door(m, door_id), handing=handing))

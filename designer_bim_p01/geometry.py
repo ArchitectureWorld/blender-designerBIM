@@ -86,8 +86,11 @@ def model_parts(m: core.Model) -> tuple[Box, ...]:
             Box(f'{d.id}.jamb-left','frame',d.id,(left,-depth,0),(left+s,depth,d.height_mm)),
             Box(f'{d.id}.jamb-right','frame',d.id,(right-s,-depth,0),(right,depth,d.height_mm)),
             Box(f'{d.id}.head','frame',d.id,(left+s,-depth,d.height_mm-s),(right-s,depth,d.height_mm)),
-            Box(f'{d.id}.leaf','leaf',d.id,(left+s+c,-depth+c,c),
-                (right-s-c,-depth+c+f.leaf_thickness_mm,d.height_mm-s-c)),
+            # Fixed 90-degree test leaf, same hinge and footprint as its plan symbol.
+            Box(f'{d.id}.leaf','leaf',d.id,
+                (left+s+c if d.handing=='LEFT' else right-s-c-f.leaf_thickness_mm,depth,c),
+                (left+s+c+f.leaf_thickness_mm if d.handing=='LEFT' else right-s-c,
+                 depth+d.width_mm-2*s-2*c,d.height_mm-s-c)),
         ))
         last = right
     result.append(Box('wall.pier-end','wall','',(last,-depth,0),(m.wall.length_mm,depth,m.wall.height_mm)))
@@ -121,10 +124,12 @@ def drawing(m: core.Model, view: str) -> Drawing:
         if view == 'PLAN':
             rect(f'{d.id}.jamb-left',left,-depth,left+s,depth,'cut',d.id,20)
             rect(f'{d.id}.jamb-right',right-s,-depth,right,depth,'cut',d.id,20)
-            hx,hy=left+s+c,depth
+            sign=1 if d.handing=='LEFT' else -1
+            hx,hy=(left+s+c if sign==1 else right-s-c),depth
             radius=d.width_mm-2*s-2*c
-            rect(f'{d.id}.open-leaf',hx,hy,hx+f.leaf_thickness_mm,hy+radius,'symbol',d.id,12)
-            arc=tuple((hx+radius*math.cos(i*math.pi/64),hy+radius*math.sin(i*math.pi/64)) for i in range(33))
+            x0,x1=sorted((hx,hx+sign*f.leaf_thickness_mm))
+            rect(f'{d.id}.open-leaf',x0,hy,x1,hy+radius,'symbol',d.id,12)
+            arc=tuple((hx+sign*radius*math.cos(i*math.pi/64),hy+radius*math.sin(i*math.pi/64)) for i in range(33))
             line(f'{d.id}.swing',arc,'symbol',d.id,8)
             text(f'{d.id}.tag',d.tag,(d.center_x_mm,-190),door_id=d.id,size=100)
             base=-depth
@@ -134,6 +139,11 @@ def drawing(m: core.Model, view: str) -> Drawing:
             rect(f'{d.id}.clear-frame',left+s,0,right-s,d.height_mm-s,'frame',d.id)
             rect(f'{d.id}.leaf',left+s+c,c,right-s-c,d.height_mm-s-c,'symbol',d.id,9)
             text(f'{d.id}.tag',d.tag,(d.center_x_mm,d.height_mm+150),door_id=d.id)
+            text(f'{d.id}.height-label',f'H {d.height_mm:g}',(d.center_x_mm,d.height_mm+290),'dimension',d.id,size=90)
+            dx=right+80
+            line(f'{d.id}.height-line',((dx,0),(dx,d.height_mm)),'dimension',d.id,6)
+            for suffix,y in (('bottom',0),('top',d.height_mm)):
+                line(f'{d.id}.height-tick-{suffix}',((dx-35,y-35),(dx+35,y+35)),'dimension',d.id,8)
             base=0
             dim_y=-380
         line(f'{d.id}.width-line',((left,dim_y),(right,dim_y)),'dimension',d.id,6)

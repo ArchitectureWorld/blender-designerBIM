@@ -1,0 +1,50 @@
+name: Blender 5.2.2 runtime
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  blender-522:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pure Python regression and release build
+        run: |
+          python -m pip install 'pytest>=8,<9'
+          python -m pytest -q
+          python scripts/build_release.py --out dist
+      - name: Obtain exact official Blender build and verify checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          base=https://download.blender.org/release/Blender5.2
+          curl --fail --location --retry 2 --max-time 240 "$base/blender-5.2.2-linux-x64.tar.xz" -o blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --max-time 60 "$base/blender-5.2.2.sha256" -o SHA256SUMS
+          grep -E ' [*]?blender-5\.2\.2-linux-x64\.tar\.xz$' SHA256SUMS > exact.sha256
+          sha256sum --check exact.sha256
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Runtime system libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libx11-6 libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libice6 libegl1 libgl1
+      - name: Official extension validation
+        run: blender --command extension validate dist/designer_bim_p01-0.2.0-blender5.2.2.zip
+      - name: Original P01 integration in actual Blender
+        run: blender --background --factory-startup --python-exit-code 1 --python scripts/blender_smoke_test.py -- "${{ runner.temp }}/blender-results/original"
+      - name: Instance edit and migration integration in actual Blender
+        run: blender --background --factory-startup --python-exit-code 1 --python scripts/blender_instances_test.py -- "${{ runner.temp }}/blender-results/instances"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: blender-522-runtime-${{ github.run_id }}
+          path: ${{ runner.temp }}/blender-results/
+          if-no-files-found: warn
