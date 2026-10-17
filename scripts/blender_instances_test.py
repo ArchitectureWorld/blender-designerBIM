@@ -42,7 +42,7 @@ def run(output):
     assert m.doors['door-01'].height_mm==2100
     owner=scene[addon.OWNER_KEY]
     def obj(key):
-        return next(o for o in scene.objects if o.get('dbim_owner')==owner and o.get('dbim_key')==key)
+        return next(o for o in addon._objects(scene) if o.get('dbim_owner')==owner and o.get('dbim_key')==key)
     assert obj('ELEVATION.'+did+'.height-label').data.body=='H 2400'
     expected=next(p for p in geometry.model_parts(m) if p.key==did+'.leaf')
     leaf=obj('MODEL.'+did+'.leaf')

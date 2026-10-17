@@ -54,20 +54,21 @@ class DBIM_OT_add_door(_InstanceOperator,Operator):
     handing: EnumProperty(name='铰链位置',items=HAND_ITEMS,default='LEFT')
 
     def _candidate(self,m,door_id):
-        source=m.doors[door_id]
+        source=m.doors.get(door_id)
         if self.mode=='COPY':
             return core.copy_door(m,door_id,self.center_x_mm)
-        return core.add_door(m,source.definition_id,self.center_x_mm,width_mm=self.width_mm,
+        return core.add_door(m,source.definition_id if source else next(iter(m.definitions)),self.center_x_mm,width_mm=self.width_mm,
                              height_mm=self.height_mm,handing=self.handing)
 
     def invoke(self,context,event):
         try:
             a=_adapter(); m=a.get_model(context.scene)
             self.source_id=a.active_door_id(context)
-            source=m.doors[self.source_id]
+            source=m.doors.get(self.source_id)
+            if self.mode=='COPY' and source is None:raise core.ModelError('请选择要复制的门')
             if self.mode=='COPY':
                 self.width_mm=source.width_mm; self.height_mm=source.height_mm; self.handing=source.handing
-            self.center_x_mm=core.suggest_center(m,self.width_mm,preferred_mm=source.center_x_mm)
+            self.center_x_mm=core.suggest_center(m,self.width_mm,preferred_mm=source.center_x_mm if source else None)
             return context.window_manager.invoke_props_dialog(self,width=460)
         except Exception as exc:
             return self.fail(exc)
@@ -90,7 +91,7 @@ class DBIM_OT_add_door(_InstanceOperator,Operator):
         try:
             a=_adapter(); m=a.harvest_notes(context.scene)
             source=self.source_id or a.active_door_id(context)
-            if source not in m.doors:
+            if self.mode=='COPY' and source not in m.doors:
                 raise core.ModelError('原门已不存在，请重新选择')
             n=self._candidate(m,source)
             new_id=next(iter(set(n.doors)-set(m.doors)))

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 ROOT=Path(__file__).resolve().parents[1]
 REPO="ArchitectureWorld/blender-designerBIM"
-VERSION="0.2.0"
+VERSION="0.3.0"
 
 def builder():
     path=ROOT/'scripts/build_release.py'

@@ -1,0 +1,426 @@
+FFFFFFFFFFFFFFFFFF                                                       [100%]
+=================================== FAILURES ===================================
+______ test_local_frame_override_preserves_definition_and_other_instances ______
+
+    def test_local_frame_override_preserves_definition_and_other_instances():
+        m=core.demo_model()
+>       n=api('set_component_part')(m,'door-01','FRAME',80,scope='INSTANCE')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+__ test_shared_change_preserves_local_override_and_reset_restores_inheritance __
+
+    def test_shared_change_preserves_local_override_and_reset_restores_inheritance():
+>       m=api('set_component_part')(core.demo_model(),'door-01','FRAME',80,scope='INSTANCE')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+__________ test_part_override_changes_both_3d_and_plan_and_roundtrips __________
+
+    def test_part_override_changes_both_3d_and_plan_and_roundtrips():
+>       m=api('set_component_part')(core.demo_model(),'door-01','LEAF',50,scope='INSTANCE')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+_________________ test_local_frame_dimension_matches_2d_and_3d _________________
+
+    def test_local_frame_dimension_matches_2d_and_3d():
+>       m=api('set_component_part')(core.demo_model(),'door-01','FRAME',85,scope='INSTANCE')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+________________ test_invalid_internal_edit_is_atomic[FRAME-0] _________________
+
+part = 'FRAME', value = 0
+
+    @pytest.mark.parametrize('part,value',[('FRAME',0),('FRAME',151),('FRAME',float('nan')),('LEAF',201),('LEAF',-1),('OTHER',50)])
+    def test_invalid_internal_edit_is_atomic(part,value):
+        m=core.demo_model(); before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(m,'door-01',part,value,scope='INSTANCE')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+_______________ test_invalid_internal_edit_is_atomic[FRAME-151] ________________
+
+part = 'FRAME', value = 151
+
+    @pytest.mark.parametrize('part,value',[('FRAME',0),('FRAME',151),('FRAME',float('nan')),('LEAF',201),('LEAF',-1),('OTHER',50)])
+    def test_invalid_internal_edit_is_atomic(part,value):
+        m=core.demo_model(); before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(m,'door-01',part,value,scope='INSTANCE')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+_______________ test_invalid_internal_edit_is_atomic[FRAME-nan] ________________
+
+part = 'FRAME', value = nan
+
+    @pytest.mark.parametrize('part,value',[('FRAME',0),('FRAME',151),('FRAME',float('nan')),('LEAF',201),('LEAF',-1),('OTHER',50)])
+    def test_invalid_internal_edit_is_atomic(part,value):
+        m=core.demo_model(); before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(m,'door-01',part,value,scope='INSTANCE')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+________________ test_invalid_internal_edit_is_atomic[LEAF-201] ________________
+
+part = 'LEAF', value = 201
+
+    @pytest.mark.parametrize('part,value',[('FRAME',0),('FRAME',151),('FRAME',float('nan')),('LEAF',201),('LEAF',-1),('OTHER',50)])
+    def test_invalid_internal_edit_is_atomic(part,value):
+        m=core.demo_model(); before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(m,'door-01',part,value,scope='INSTANCE')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+________________ test_invalid_internal_edit_is_atomic[LEAF--1] _________________
+
+part = 'LEAF', value = -1
+
+    @pytest.mark.parametrize('part,value',[('FRAME',0),('FRAME',151),('FRAME',float('nan')),('LEAF',201),('LEAF',-1),('OTHER',50)])
+    def test_invalid_internal_edit_is_atomic(part,value):
+        m=core.demo_model(); before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(m,'door-01',part,value,scope='INSTANCE')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+________________ test_invalid_internal_edit_is_atomic[OTHER-50] ________________
+
+part = 'OTHER', value = 50
+
+    @pytest.mark.parametrize('part,value',[('FRAME',0),('FRAME',151),('FRAME',float('nan')),('LEAF',201),('LEAF',-1),('OTHER',50)])
+    def test_invalid_internal_edit_is_atomic(part,value):
+        m=core.demo_model(); before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(m,'door-01',part,value,scope='INSTANCE')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+__________________ test_edit_scope_must_be_explicit_and_valid __________________
+
+    def test_edit_scope_must_be_explicit_and_valid():
+        with pytest.raises(core.ModelError):
+>           api('set_component_part')(core.demo_model(),'door-01','FRAME',80,scope='SELECTED')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+_____________________ test_copy_keeps_overrides_not_notes ______________________
+
+    def test_copy_keeps_overrides_not_notes():
+>       m=api('set_component_part')(core.demo_model(),'door-01','FRAME',80,scope='INSTANCE')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+___________________ test_local_edit_marks_only_affected_note ___________________
+
+    def test_local_edit_marks_only_affected_note():
+        m=core.add_note(core.demo_model(),'door-01','one',note_id='one')
+        m=core.add_note(m,'door-02','two',note_id='two')
+>       n=api('set_component_part')(m,'door-01','FRAME',80,scope='INSTANCE')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'set_component_part'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: set_component_part: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+_____ test_delete_requires_explicit_note_confirmation_and_preserves_others _____
+
+    def test_delete_requires_explicit_note_confirmation_and_preserves_others():
+        m=core.add_note(core.demo_model(),'door-01','remove?',note_id='one')
+        m=core.add_note(m,'door-02','keep',note_id='two')
+        before=core.dumps(m)
+        with pytest.raises(core.ModelError):
+>           api('delete_doors')(m,('door-01',))
+            ^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'delete_doors'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: delete_doors: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+___________ test_delete_last_door_keeps_wall_and_allows_new_instance ___________
+
+    def test_delete_last_door_keeps_wall_and_allows_new_instance():
+        m=core.demo_model()
+>       n=api('delete_doors')(m,tuple(m.doors))
+          ^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'delete_doors'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: delete_doors: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+____________________ test_unknown_and_empty_delete_rejected ____________________
+
+    def test_unknown_and_empty_delete_rejected():
+        for ids in ((),('alien',),('door-01','alien')):
+>           with pytest.raises(core.ModelError):api('delete_doors')(core.demo_model(),ids)
+                                                ^^^^^^^^^^^^^^^^^^^
+
+tests/test_components.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'delete_doors'
+
+    def api(name):
+        fn=getattr(core,name,None)
+>       assert callable(fn), f'{name}: required component operation is absent'
+E       AssertionError: delete_doors: required component operation is absent
+E       assert False
+E        +  where False = callable(None)
+
+tests/test_components.py:10: AssertionError
+________ test_schema2_migration_keeps_ids_text_and_actual_review_state _________
+
+    def test_schema2_migration_keeps_ids_text_and_actual_review_state():
+        raw=json.loads(core.dumps(core.add_note(core.demo_model(),'door-01','keep',note_id='n')))
+        raw['schema_version']=2
+        for d in raw['doors'].values():
+            d.pop('frame_section_override_mm',None);d.pop('leaf_thickness_override_mm',None)
+        import hashlib
+        payload={'instance':raw['doors']['door-01'],'definition':raw['definitions']['door-def-01'],'host':raw['wall']}
+        raw['notes']['n']['reviewed_signature']=hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()[:24]
+        n=core.loads(json.dumps(raw))
+>       assert n.schema_version==3
+E       AssertionError: assert 2 == 3
+E        +  where 2 = Model(schema_version=2, revision=1, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...door-01', text='keep', view='ELEVATION', position_mm=(1750.0, 2500.0), reviewed_signature='b54a32d35edf1cee53974fca')}).schema_version
+
+tests/test_components.py:121: AssertionError
+___________ test_schema1_migration_still_keeps_original_review_flags ___________
+
+    def test_schema1_migration_still_keeps_original_review_flags():
+        from pathlib import Path
+        m=core.loads((Path(__file__).parent/'fixtures/schema1_notes.json').read_text())
+>       assert m.schema_version==3
+E       AssertionError: assert 2 == 3
+E        +  where 2 = Model(schema_version=2, revision=3, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...r-02', text='保留已有待复核', view='ELEVATION', position_mm=(4500.0, 2500.0), reviewed_signature='fc0bc5c4cf6bef0f6a3d0e88')}).schema_version
+
+tests/test_components.py:130: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_components.py::test_local_frame_override_preserves_definition_and_other_instances - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_shared_change_preserves_local_override_and_reset_restores_inheritance - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_part_override_changes_both_3d_and_plan_and_roundtrips - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_local_frame_dimension_matches_2d_and_3d - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_invalid_internal_edit_is_atomic[FRAME-0] - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_invalid_internal_edit_is_atomic[FRAME-151] - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_invalid_internal_edit_is_atomic[FRAME-nan] - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_invalid_internal_edit_is_atomic[LEAF-201] - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_invalid_internal_edit_is_atomic[LEAF--1] - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_invalid_internal_edit_is_atomic[OTHER-50] - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_edit_scope_must_be_explicit_and_valid - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_copy_keeps_overrides_not_notes - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_local_edit_marks_only_affected_note - AssertionError: set_component_part: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_delete_requires_explicit_note_confirmation_and_preserves_others - AssertionError: delete_doors: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_delete_last_door_keeps_wall_and_allows_new_instance - AssertionError: delete_doors: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_unknown_and_empty_delete_rejected - AssertionError: delete_doors: required component operation is absent
+assert False
+ +  where False = callable(None)
+FAILED tests/test_components.py::test_schema2_migration_keeps_ids_text_and_actual_review_state - AssertionError: assert 2 == 3
+ +  where 2 = Model(schema_version=2, revision=1, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...door-01', text='keep', view='ELEVATION', position_mm=(1750.0, 2500.0), reviewed_signature='b54a32d35edf1cee53974fca')}).schema_version
+FAILED tests/test_components.py::test_schema1_migration_still_keeps_original_review_flags - AssertionError: assert 2 == 3
+ +  where 2 = Model(schema_version=2, revision=3, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...r-02', text='保留已有待复核', view='ELEVATION', position_mm=(4500.0, 2500.0), reviewed_signature='fc0bc5c4cf6bef0f6a3d0e88')}).schema_version
+18 failed in 0.17s
