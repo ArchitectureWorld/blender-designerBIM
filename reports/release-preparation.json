@@ -1,0 +1,12 @@
+{
+  "version": "0.1.1",
+  "target_blender": "5.2.2",
+  "pure_python_static_tests": {
+    "passed": 43,
+    "failed": 0
+  },
+  "compile": "PASS",
+  "workflow_yaml_bash_syntax": "PASS",
+  "blender_runtime": "NOT_RUN",
+  "public_urls": "PENDING_PUBLICATION"
+}

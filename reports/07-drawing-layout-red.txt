@@ -1,0 +1,56 @@
+.......FF                                                                [100%]
+=================================== FAILURES ===================================
+____________ test_a3_dimensions_do_not_hit_footer_or_bottom_border _____________
+
+    def test_a3_dimensions_do_not_hit_footer_or_bottom_border():
+        m=core.set_width(core.demo_model(),'door-01',1200)
+        root=ET.fromstring(geometry.svg_document(m))
+        coords=[]
+        for element in root.iter():
+            if 'points' in element.attrib:
+                coords.extend(float(pair.split(',')[1]) for pair in element.attrib['points'].split())
+>       assert max(coords)<283, 'Plan witness lines must leave space for footer'
+E       AssertionError: Plan witness lines must leave space for footer
+E       assert 288.6 < 283
+E        +  where 288.6 = max([185.0, 185.0, 65.0, 65.0, 185.0, 185.0, ...])
+
+tests/test_geometry.py:82: AssertionError
+______________ test_default_manual_leader_avoids_door_center_tag _______________
+
+    def test_default_manual_leader_avoids_door_center_tag():
+        m=core.add_note(core.demo_model(),'door-02','note',note_id='n')
+        dr=geometry.drawing(m,'ELEVATION')
+        leader=next(l for l in dr.lines if l.key=='note.n.leader')
+        d=m.doors['door-02']
+>       assert leader.points[-1]==(d.center_x_mm+d.width_mm/2,d.height_mm)
+E       assert (4500.0, 2100.0) == (4950.0, 2100.0)
+E         
+E         At index 0 diff: 4500.0 != 4950.0
+E         
+E         Full diff:
+E           (
+E         -     4950.0,
+E         ?      -
+E         +     4500.0,
+E         ?       +
+E               2100.0,
+E           )
+
+tests/test_geometry.py:92: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_geometry.py::test_a3_dimensions_do_not_hit_footer_or_bottom_border - AssertionError: Plan witness lines must leave space for footer
+assert 288.6 < 283
+ +  where 288.6 = max([185.0, 185.0, 65.0, 65.0, 185.0, 185.0, ...])
+FAILED tests/test_geometry.py::test_default_manual_leader_avoids_door_center_tag - assert (4500.0, 2100.0) == (4950.0, 2100.0)
+  
+  At index 0 diff: 4500.0 != 4950.0
+  
+  Full diff:
+    (
+  -     4950.0,
+  ?      -
+  +     4500.0,
+  ?       +
+        2100.0,
+    )
+2 failed, 7 passed in 0.12s

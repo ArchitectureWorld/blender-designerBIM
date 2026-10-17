@@ -1,0 +1,256 @@
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+______________ test_release_has_installable_manifest_at_zip_root _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_release_has_installable_m0')
+
+    def test_release_has_installable_manifest_at_zip_root(tmp_path):
+>       result = builder().build_release(ROOT, tmp_path, REPO)
+                 ^^^^^^^^^
+
+tests/test_release.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+________ test_listing_hash_size_and_version_are_derived_from_actual_zip ________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_listing_hash_size_and_ver0')
+
+    def test_listing_hash_size_and_version_are_derived_from_actual_zip(tmp_path):
+>       result = builder().build_release(ROOT, tmp_path, REPO)
+                 ^^^^^^^^^
+
+tests/test_release.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+________________________ test_release_is_deterministic _________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_release_is_deterministic0')
+
+    def test_release_is_deterministic(tmp_path):
+>       a = builder().build_release(ROOT, tmp_path / "a", REPO)
+            ^^^^^^^^^
+
+tests/test_release.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+__ test_source_archive_includes_tests_and_excludes_generated_or_private_files __
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_source_archive_includes_t0')
+
+    def test_source_archive_includes_tests_and_excludes_generated_or_private_files(tmp_path):
+>       result = builder().build_release(ROOT, tmp_path, REPO)
+                 ^^^^^^^^^
+
+tests/test_release.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+______________________ test_invalid_repository_rejected[] ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_invalid_repository_reject0')
+bad_repo = ''
+
+    @pytest.mark.parametrize("bad_repo", ["", "https://github.com/a/b", "a/b/c", "a/../b"])
+    def test_invalid_repository_rejected(tmp_path, bad_repo):
+        with pytest.raises(ValueError, match="repository"):
+>           builder().build_release(ROOT, tmp_path, bad_repo)
+            ^^^^^^^^^
+
+tests/test_release.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+___________ test_invalid_repository_rejected[https://github.com/a/b] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_invalid_repository_reject1')
+bad_repo = 'https://github.com/a/b'
+
+    @pytest.mark.parametrize("bad_repo", ["", "https://github.com/a/b", "a/b/c", "a/../b"])
+    def test_invalid_repository_rejected(tmp_path, bad_repo):
+        with pytest.raises(ValueError, match="repository"):
+>           builder().build_release(ROOT, tmp_path, bad_repo)
+            ^^^^^^^^^
+
+tests/test_release.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+___________________ test_invalid_repository_rejected[a/b/c] ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_invalid_repository_reject2')
+bad_repo = 'a/b/c'
+
+    @pytest.mark.parametrize("bad_repo", ["", "https://github.com/a/b", "a/b/c", "a/../b"])
+    def test_invalid_repository_rejected(tmp_path, bad_repo):
+        with pytest.raises(ValueError, match="repository"):
+>           builder().build_release(ROOT, tmp_path, bad_repo)
+            ^^^^^^^^^
+
+tests/test_release.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+___________________ test_invalid_repository_rejected[a/../b] ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_invalid_repository_reject3')
+bad_repo = 'a/../b'
+
+    @pytest.mark.parametrize("bad_repo", ["", "https://github.com/a/b", "a/b/c", "a/../b"])
+    def test_invalid_repository_rejected(tmp_path, bad_repo):
+        with pytest.raises(ValueError, match="repository"):
+>           builder().build_release(ROOT, tmp_path, bad_repo)
+            ^^^^^^^^^
+
+tests/test_release.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+_________________ test_public_verifier_rejects_corrupt_archive _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_public_verifier_rejects_c0')
+
+    def test_public_verifier_rejects_corrupt_archive(tmp_path):
+>       module = builder()
+                 ^^^^^^^^^
+
+tests/test_release.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+_____________ test_public_verifier_rejects_wrong_expected_version ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_public_verifier_rejects_w0')
+
+    def test_public_verifier_rejects_wrong_expected_version(tmp_path):
+>       result = builder().build_release(ROOT, tmp_path, REPO)
+                 ^^^^^^^^^
+
+tests/test_release.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def builder():
+        path = ROOT / "scripts/build_release.py"
+>       assert path.is_file(), "remote release builder is missing"
+E       AssertionError: remote release builder is missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+
+tests/test_release.py:19: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_release.py::test_release_has_installable_manifest_at_zip_root - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_listing_hash_size_and_version_are_derived_from_actual_zip - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_release_is_deterministic - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_source_archive_includes_tests_and_excludes_generated_or_private_files - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_invalid_repository_rejected[] - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_invalid_repository_rejected[https://github.com/a/b] - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_invalid_repository_rejected[a/b/c] - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_invalid_repository_rejected[a/../b] - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_public_verifier_rejects_corrupt_archive - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+FAILED tests/test_release.py::test_public_verifier_rejects_wrong_expected_version - AssertionError: remote release builder is missing
+assert False
+ +  where False = is_file()
+ +    where is_file = PosixPath('/mnt/data/designerbim_publish/DesignerBIM_P01/scripts/build_release.py').is_file
+10 failed in 0.09s

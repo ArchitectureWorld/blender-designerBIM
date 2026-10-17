@@ -1,0 +1,144 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_wall_has_real_openings_not_overlaid_door_rectangles ___________
+
+    def test_wall_has_real_openings_not_overlaid_door_rectangles():
+        m = core.demo_model()
+>       wall_parts = [p for p in scene(m) if p.role == 'wall']
+                                 ^^^^^^^^
+
+tests/test_geometry.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+m = Model(schema_version=1, revision=0, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...ition_id='door-def-01', tag='D03', center_x_mm=7250.0, width_mm=900.0, height_mm=2100.0, wall_id='wall-01')}, notes={})
+
+    def scene(m=None):
+>       assert callable(getattr(geometry, 'model_parts', None)), 'model_parts missing'
+E       AssertionError: model_parts missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'model_parts', None)
+
+tests/test_geometry.py:7: AssertionError
+____________ test_frame_thickness_is_not_scaled_with_opening_width _____________
+
+    def test_frame_thickness_is_not_scaled_with_opening_width():
+        m = core.set_width(core.demo_model(), 'door-01', 1200)
+>       frames = [p for p in scene(m) if p.door_id == 'door-01' and p.role == 'frame']
+                             ^^^^^^^^
+
+tests/test_geometry.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+m = Model(schema_version=1, revision=1, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...ition_id='door-def-01', tag='D03', center_x_mm=7250.0, width_mm=900.0, height_mm=2100.0, wall_id='wall-01')}, notes={})
+
+    def scene(m=None):
+>       assert callable(getattr(geometry, 'model_parts', None)), 'model_parts missing'
+E       AssertionError: model_parts missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'model_parts', None)
+
+tests/test_geometry.py:7: AssertionError
+_____________ test_geometry_keys_stay_stable_through_instance_edit _____________
+
+    def test_geometry_keys_stay_stable_through_instance_edit():
+        m = core.demo_model()
+        n = core.set_width(m, 'door-01', 1200)
+>       assert {p.key for p in scene(m)} == {p.key for p in scene(n)}
+                               ^^^^^^^^
+
+tests/test_geometry.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+m = Model(schema_version=1, revision=0, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...ition_id='door-def-01', tag='D03', center_x_mm=7250.0, width_mm=900.0, height_mm=2100.0, wall_id='wall-01')}, notes={})
+
+    def scene(m=None):
+>       assert callable(getattr(geometry, 'model_parts', None)), 'model_parts missing'
+E       AssertionError: model_parts missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'model_parts', None)
+
+tests/test_geometry.py:7: AssertionError
+__________ test_both_drawings_get_new_width_and_link_to_same_instance __________
+
+    def test_both_drawings_get_new_width_and_link_to_same_instance():
+>       assert callable(getattr(geometry, 'drawing', None)), 'drawing missing'
+E       AssertionError: drawing missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'drawing', None)
+
+tests/test_geometry.py:36: AssertionError
+__________________ test_svg_is_valid_and_escapes_manual_notes __________________
+
+    def test_svg_is_valid_and_escapes_manual_notes():
+>       assert callable(getattr(geometry, 'svg_document', None)), 'svg_document missing'
+E       AssertionError: svg_document missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'svg_document', None)
+
+tests/test_geometry.py:48: AssertionError
+__________ test_review_state_is_exposed_without_overwriting_note_body __________
+
+    def test_review_state_is_exposed_without_overwriting_note_body():
+        m = core.add_note(core.demo_model(), 'door-02', 'Keep this text', note_id='n')
+        m = core.set_width(m, 'door-02', 1100)
+>       assert callable(getattr(geometry, 'drawing', None)), 'drawing missing'
+E       AssertionError: drawing missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'drawing', None)
+
+tests/test_geometry.py:61: AssertionError
+_________________ test_geometry_counts_and_vertices_are_valid __________________
+
+    def test_geometry_counts_and_vertices_are_valid():
+>       for p in scene():
+                 ^^^^^^^
+
+tests/test_geometry.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+m = None
+
+    def scene(m=None):
+>       assert callable(getattr(geometry, 'model_parts', None)), 'model_parts missing'
+E       AssertionError: model_parts missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(geometry, 'model_parts', None)
+
+tests/test_geometry.py:7: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_geometry.py::test_wall_has_real_openings_not_overlaid_door_rectangles - AssertionError: model_parts missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'model_parts', None)
+FAILED tests/test_geometry.py::test_frame_thickness_is_not_scaled_with_opening_width - AssertionError: model_parts missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'model_parts', None)
+FAILED tests/test_geometry.py::test_geometry_keys_stay_stable_through_instance_edit - AssertionError: model_parts missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'model_parts', None)
+FAILED tests/test_geometry.py::test_both_drawings_get_new_width_and_link_to_same_instance - AssertionError: drawing missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'drawing', None)
+FAILED tests/test_geometry.py::test_svg_is_valid_and_escapes_manual_notes - AssertionError: svg_document missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'svg_document', None)
+FAILED tests/test_geometry.py::test_review_state_is_exposed_without_overwriting_note_body - AssertionError: drawing missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'drawing', None)
+FAILED tests/test_geometry.py::test_geometry_counts_and_vertices_are_valid - AssertionError: model_parts missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(geometry, 'model_parts', None)
+7 failed in 0.13s

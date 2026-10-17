@@ -1,0 +1,337 @@
+FFFFFFFFFFFFFFFFFFF                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_demo_has_three_instances_and_one_shared_definition ____________
+
+    def test_demo_has_three_instances_and_one_shared_definition():
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+_______ test_width_changes_only_target_instance_and_preserves_definition _______
+
+    def test_width_changes_only_target_instance_and_preserves_definition():
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+____________ test_definition_scope_and_selection_scope_are_explicit ____________
+
+    def test_definition_scope_and_selection_scope_are_explicit():
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+____________ test_shared_frame_edit_does_not_reset_instance_widths _____________
+
+    def test_shared_frame_edit_does_not_reset_instance_widths():
+>       m = core.set_width(model(), 'door-01', 1200)
+            ^^^^^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'set_width'
+
+tests/test_core.py:40: AttributeError
+__________ test_invalid_width_rejected_without_mutating_old_state[0] ___________
+
+value = 0
+
+    @pytest.mark.parametrize('value', [0, -1, float('nan'), float('inf'), 10000, 120])
+    def test_invalid_width_rejected_without_mutating_old_state(value):
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+__________ test_invalid_width_rejected_without_mutating_old_state[-1] __________
+
+value = -1
+
+    @pytest.mark.parametrize('value', [0, -1, float('nan'), float('inf'), 10000, 120])
+    def test_invalid_width_rejected_without_mutating_old_state(value):
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+_________ test_invalid_width_rejected_without_mutating_old_state[nan] __________
+
+value = nan
+
+    @pytest.mark.parametrize('value', [0, -1, float('nan'), float('inf'), 10000, 120])
+    def test_invalid_width_rejected_without_mutating_old_state(value):
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+_________ test_invalid_width_rejected_without_mutating_old_state[inf] __________
+
+value = inf
+
+    @pytest.mark.parametrize('value', [0, -1, float('nan'), float('inf'), 10000, 120])
+    def test_invalid_width_rejected_without_mutating_old_state(value):
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+________ test_invalid_width_rejected_without_mutating_old_state[10000] _________
+
+value = 10000
+
+    @pytest.mark.parametrize('value', [0, -1, float('nan'), float('inf'), 10000, 120])
+    def test_invalid_width_rejected_without_mutating_old_state(value):
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+_________ test_invalid_width_rejected_without_mutating_old_state[120] __________
+
+value = 120
+
+    @pytest.mark.parametrize('value', [0, -1, float('nan'), float('inf'), 10000, 120])
+    def test_invalid_width_rejected_without_mutating_old_state(value):
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+___________________ test_noop_edit_does_not_create_revision ____________________
+
+    def test_noop_edit_does_not_create_revision():
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+_________________ test_empty_or_foreign_selection_is_rejected __________________
+
+    def test_empty_or_foreign_selection_is_rejected():
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+______________________ test_collision_rejected_atomically ______________________
+
+    def test_collision_rejected_atomically():
+>       m = model()
+            ^^^^^^^
+
+tests/test_core.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def model():
+>       assert callable(getattr(core, 'demo_model', None)), 'demo_model implementation is missing'
+E       AssertionError: demo_model implementation is missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(core, 'demo_model', None)
+
+tests/test_core.py:10: AssertionError
+_________ test_note_preserved_and_only_relevant_change_requires_review _________
+
+    def test_note_preserved_and_only_relevant_change_requires_review():
+>       m = core.add_note(model(), 'door-02', '人工收口说明', view='ELEVATION', position_mm=(4500, 2500), note_id='note-01')
+            ^^^^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+
+tests/test_core.py:77: AttributeError
+___________ test_shared_frame_edit_marks_associated_note_for_review ____________
+
+    def test_shared_frame_edit_marks_associated_note_for_review():
+>       m = core.add_note(model(), 'door-02', 'Review frame', note_id='n')
+            ^^^^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+
+tests/test_core.py:89: AttributeError
+_________ test_editing_note_text_does_not_implicitly_confirm_geometry __________
+
+    def test_editing_note_text_does_not_implicitly_confirm_geometry():
+>       m = core.add_note(model(), 'door-02', 'Original', note_id='n')
+            ^^^^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+
+tests/test_core.py:95: AttributeError
+_________ test_json_roundtrip_retains_all_identities_and_review_state __________
+
+    def test_json_roundtrip_retains_all_identities_and_review_state():
+>       m = core.add_note(model(), 'door-02', '中文 <>& text', note_id='n')
+            ^^^^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+
+tests/test_core.py:103: AttributeError
+___________ test_future_schema_is_rejected_not_silently_overwritten ____________
+
+    def test_future_schema_is_rejected_not_silently_overwritten():
+>       data = json.loads(core.dumps(model()))
+                          ^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'dumps'
+
+tests/test_core.py:111: AttributeError
+__________________ test_orphan_instance_reference_is_rejected __________________
+
+    def test_orphan_instance_reference_is_rejected():
+>       data = json.loads(core.dumps(model()))
+                          ^^^^^^^^^^
+E       AttributeError: module 'designer_bim_p01.core' has no attribute 'dumps'
+
+tests/test_core.py:118: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_core.py::test_demo_has_three_instances_and_one_shared_definition - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_width_changes_only_target_instance_and_preserves_definition - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_definition_scope_and_selection_scope_are_explicit - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_shared_frame_edit_does_not_reset_instance_widths - AttributeError: module 'designer_bim_p01.core' has no attribute 'set_width'
+FAILED tests/test_core.py::test_invalid_width_rejected_without_mutating_old_state[0] - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_invalid_width_rejected_without_mutating_old_state[-1] - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_invalid_width_rejected_without_mutating_old_state[nan] - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_invalid_width_rejected_without_mutating_old_state[inf] - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_invalid_width_rejected_without_mutating_old_state[10000] - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_invalid_width_rejected_without_mutating_old_state[120] - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_noop_edit_does_not_create_revision - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_empty_or_foreign_selection_is_rejected - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_collision_rejected_atomically - AssertionError: demo_model implementation is missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(core, 'demo_model', None)
+FAILED tests/test_core.py::test_note_preserved_and_only_relevant_change_requires_review - AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+FAILED tests/test_core.py::test_shared_frame_edit_marks_associated_note_for_review - AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+FAILED tests/test_core.py::test_editing_note_text_does_not_implicitly_confirm_geometry - AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+FAILED tests/test_core.py::test_json_roundtrip_retains_all_identities_and_review_state - AttributeError: module 'designer_bim_p01.core' has no attribute 'add_note'
+FAILED tests/test_core.py::test_future_schema_is_rejected_not_silently_overwritten - AttributeError: module 'designer_bim_p01.core' has no attribute 'dumps'
+FAILED tests/test_core.py::test_orphan_instance_reference_is_rejected - AttributeError: module 'designer_bim_p01.core' has no attribute 'dumps'
+19 failed in 0.26s

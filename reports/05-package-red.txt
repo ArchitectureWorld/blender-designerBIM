@@ -1,0 +1,76 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+__________ test_installable_extension_pins_requested_blender_baseline __________
+
+    def test_installable_extension_pins_requested_blender_baseline():
+        path=ROOT/'designer_bim_p01'/'blender_manifest.toml'
+>       assert path.exists(), 'installable manifest missing'
+E       AssertionError: installable manifest missing
+E       assert False
+E        +  where False = exists()
+E        +    where exists = PosixPath('/mnt/data/blender_bim_p01/designer_bim_p01/blender_manifest.toml').exists
+
+tests/test_package.py:10: AssertionError
+___________ test_drag_grows_opening_symmetrically_about_fixed_center ___________
+
+    def test_drag_grows_opening_symmetrically_about_fixed_center():
+>       assert callable(getattr(interaction,'width_from_drag',None)), 'width drag mapping missing'
+E       AssertionError: width drag mapping missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(interaction, 'width_from_drag', None)
+
+tests/test_package.py:19: AssertionError
+_______________________ test_drag_precision_is_explicit ________________________
+
+    def test_drag_precision_is_explicit():
+>       assert callable(getattr(interaction,'width_from_drag',None)), 'width drag mapping missing'
+E       AssertionError: width drag mapping missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(interaction, 'width_from_drag', None)
+
+tests/test_package.py:25: AssertionError
+_______________________ test_drag_invalid_input_rejected _______________________
+
+    def test_drag_invalid_input_rejected():
+>       assert callable(getattr(interaction,'width_from_drag',None)), 'width drag mapping missing'
+E       AssertionError: width drag mapping missing
+E       assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(interaction, 'width_from_drag', None)
+
+tests/test_package.py:31: AssertionError
+_______ test_runtime_adapter_exists_without_installing_into_user_startup _______
+
+    def test_runtime_adapter_exists_without_installing_into_user_startup():
+        path=ROOT/'designer_bim_p01'/'addon.py'
+>       assert path.exists(), 'Blender adapter missing'
+E       AssertionError: Blender adapter missing
+E       assert False
+E        +  where False = exists()
+E        +    where exists = PosixPath('/mnt/data/blender_bim_p01/designer_bim_p01/addon.py').exists
+
+tests/test_package.py:38: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_package.py::test_installable_extension_pins_requested_blender_baseline - AssertionError: installable manifest missing
+assert False
+ +  where False = exists()
+ +    where exists = PosixPath('/mnt/data/blender_bim_p01/designer_bim_p01/blender_manifest.toml').exists
+FAILED tests/test_package.py::test_drag_grows_opening_symmetrically_about_fixed_center - AssertionError: width drag mapping missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(interaction, 'width_from_drag', None)
+FAILED tests/test_package.py::test_drag_precision_is_explicit - AssertionError: width drag mapping missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(interaction, 'width_from_drag', None)
+FAILED tests/test_package.py::test_drag_invalid_input_rejected - AssertionError: width drag mapping missing
+assert False
+ +  where False = callable(None)
+ +    where None = getattr(interaction, 'width_from_drag', None)
+FAILED tests/test_package.py::test_runtime_adapter_exists_without_installing_into_user_startup - AssertionError: Blender adapter missing
+assert False
+ +  where False = exists()
+ +    where exists = PosixPath('/mnt/data/blender_bim_p01/designer_bim_p01/addon.py').exists
+5 failed in 0.10s

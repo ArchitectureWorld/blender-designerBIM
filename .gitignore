@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+*.blend1
+dist/
+bootstrap/
+.venv/
+.env
+.env.*
+*.pem
+*.key
