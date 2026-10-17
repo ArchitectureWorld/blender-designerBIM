@@ -76,8 +76,11 @@ def tick():
                 state['checks'].append('actual Blender undo restores root and engineering state')
             elif step==7:
                 # Exercise the actual Object Mode keymap, not just operator invocation.
-                subprocess.run(['xdotool','mousemove',str(area.x+region.x+region.width//2),
-                                str(window.height-(area.y+region.y+region.height//2)),
+                wid=subprocess.check_output(['xdotool','search','--onlyvisible','--pid',str(os.getpid())],text=True).splitlines()[0]
+                subprocess.run(['xdotool','windowfocus','--sync',wid],check=True)
+                state['checks'].append('X11 focus set on Blender window')
+                subprocess.run(['xdotool','mousemove',str(region.x+region.width//2),
+                                str(window.height-(region.y+region.height//2)),
                                 'key','Tab'],check=True)
             elif step==8:
                 assert context.mode=='OBJECT' and context.scene.get('dbim_component_edit')=='door-01', (context.mode,context.scene.get('dbim_component_edit'))
