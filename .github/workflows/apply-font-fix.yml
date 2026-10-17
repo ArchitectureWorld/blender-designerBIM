@@ -1,0 +1,57 @@
+name: Apply runtime-confirmed font correction
+on:
+  push:
+    branches: [codex/p01-instance-edit-v0.2.0]
+    paths: [.github/workflows/apply-font-fix.yml]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.repository == 'ArchitectureWorld/blender-designerBIM'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/p01-instance-edit-v0.2.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply exact one-line correction and regression test
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          p = Path('designer_bim_p01/addon.py')
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip() == '8b656af882025de072c2d550b2f02360d68c0574'
+          old = "c.align_y='BASELINE'"
+          text = p.read_text()
+          assert text.count(old) == 1
+          p.write_text(text.replace(old,"c.align_y='BOTTOM_BASELINE'"))
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip() == '8cc75aa2f1638a538b92ffedd8f1e627f279a4b6'
+          t = Path('tests/test_font_compat.py')
+          assert not t.exists()
+          t.write_text('''"""Pin the valid text baseline used by the real Blender runtime adapter."""
+          import ast
+          from pathlib import Path
+
+
+          def test_drawing_text_uses_supported_blender_baseline():
+              source = Path(__file__).resolve().parents[1] / 'designer_bim_p01' / 'addon.py'
+              values = [node.value.value for node in ast.walk(ast.parse(source.read_text()))
+                        if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
+                        and any(isinstance(t, ast.Attribute) and t.attr == 'align_y' for t in node.targets)]
+              assert values == ['BOTTOM_BASELINE']
+          ''')
+          PY
+          python -m pip install 'pytest>=8,<9'
+          python -m pytest -q
+          python -m compileall -q designer_bim_p01 scripts tests
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add designer_bim_p01/addon.py tests/test_font_compat.py
+          git commit -m 'fix: use supported Blender text baseline for drawing generation'
+          git push origin HEAD:codex/p01-instance-edit-v0.2.0
