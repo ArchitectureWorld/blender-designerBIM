@@ -13,7 +13,7 @@ import math
 from typing import Iterable
 from uuid import uuid4
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 
 class ModelError(ValueError):
@@ -47,6 +47,8 @@ class DoorInstance:
     height_mm: float = 2100.0
     wall_id: str = 'wall-01'
     handing: str = 'LEFT'
+    frame_section_override_mm: float | None = None
+    leaf_thickness_override_mm: float | None = None
 
 
 @dataclass(frozen=True)
@@ -81,7 +83,7 @@ def validate(m: Model) -> Model:
         raise ModelError('Invalid revision')
     for key in ('length_mm', 'height_mm', 'depth_mm'):
         _finite_positive(getattr(m.wall, key), key)
-    if not m.wall.id or not m.definitions or not m.doors:
+    if not m.wall.id or not m.definitions:
         raise ModelError('Wall, definition and instance identities are required')
     tags = set()
     for key, d in m.definitions.items():
@@ -104,7 +106,15 @@ def validate(m: Model) -> Model:
         tags.add(d.tag)
         for prop in ('width_mm', 'height_mm', 'center_x_mm'):
             _finite_positive(getattr(d, prop), prop)
-        definition = m.definitions[d.definition_id]
+        for override in ('frame_section_override_mm', 'leaf_thickness_override_mm'):
+            value = getattr(d, override)
+            if value is not None:
+                _finite_positive(value, override)
+        definition = effective_definition(m, d.id)
+        if not 15 <= definition.frame_section_mm <= 150:
+            raise ModelError('Local frame section must be 15–150 mm')
+        if definition.leaf_thickness_mm > m.wall.depth_mm:
+            raise ModelError('Local leaf thicker than host wall')
         if d.width_mm < 300 or d.width_mm <= 2*definition.frame_section_mm+2*definition.clearance_mm+100:
             raise ModelError('Opening too small for frame and leaf / 门洞不足以容纳门框与门扇')
         if d.height_mm < 500 or d.height_mm > m.wall.height_mm-120:
@@ -142,7 +152,7 @@ def dumps(m: Model) -> str:
 def loads(text: str) -> Model:
     try:
         raw = json.loads(text)
-        if not isinstance(raw, dict) or raw.get('schema_version') not in (1, SCHEMA_VERSION):
+        if not isinstance(raw, dict) or raw.get('schema_version') not in (1, 2, SCHEMA_VERSION):
             raise ModelError(f"Unsupported schema {raw.get('schema_version') if isinstance(raw,dict) else '?'}")
         notes = {}
         for key, value in raw['notes'].items():
@@ -152,12 +162,12 @@ def loads(text: str) -> Model:
         m = validate(Model(SCHEMA_VERSION, raw['revision'], Wall(**raw['wall']),
                            {k: DoorDefinition(**v) for k, v in raw['definitions'].items()},
                            {k: DoorInstance(**v) for k, v in raw['doors'].items()}, notes))
-        if raw['schema_version'] == 1:
+        if raw['schema_version'] in (1, 2):
             # Preserve reviewed/stale state, not just text. New defaults must not
             # turn every previously reviewed annotation into a false warning.
             migrated = {}
             for key, note in notes.items():
-                old_signature = signature(m, note.door_id, legacy=True)
+                old_signature = signature(m, note.door_id, source_schema=raw['schema_version'])
                 reviewed = signature(m, note.door_id) if note.reviewed_signature == old_signature else note.reviewed_signature
                 migrated[key] = replace(note, reviewed_signature=reviewed)
             m = replace(m, notes=migrated)
@@ -206,10 +216,13 @@ def set_frame_section(m: Model, definition_id: str, value_mm: float) -> Model:
     return validate(replace(m, definitions=definitions, revision=m.revision+1))
 
 
-def signature(m: Model, door_id: str, *, legacy: bool = False) -> str:
+def signature(m: Model, door_id: str, *, legacy: bool = False, source_schema: int | None = None) -> str:
     door = m.doors[door_id]
     data = {'instance': asdict(door), 'definition': asdict(m.definitions[door.definition_id]), 'host': asdict(m.wall)}
-    if legacy:
+    if legacy or source_schema in (1, 2):
+        data['instance'].pop('frame_section_override_mm', None)
+        data['instance'].pop('leaf_thickness_override_mm', None)
+    if legacy or source_schema == 1:
         data['instance'].pop('handing', None)
     return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:24]
 
@@ -297,10 +310,13 @@ def add_door(m: Model, definition_id: str, center_x_mm: float, *, width_mm: floa
 
 def copy_door(m: Model, door_id: str, center_x_mm: float, *, instance_id: str | None = None) -> Model:
     source = _door(m, door_id)
-    # A new occurrence shares its definition, never the original ID or approvals.
-    return add_door(m, source.definition_id, center_x_mm, width_mm=source.width_mm,
-                    height_mm=source.height_mm, handing=source.handing, instance_id=instance_id)
-
+    _finite_positive(center_x_mm, 'center_x_mm')
+    key = str(uuid4()) if instance_id is None else instance_id
+    if not isinstance(key, str) or not key or key in m.doors:
+        raise ModelError('Duplicate or invalid instance ID / 实例标识冲突')
+    # Validate only after carrying all local overrides into the new occurrence.
+    door = replace(source, id=key, tag=next_door_tag(m), center_x_mm=float(center_x_mm))
+    return _replace_door(m, door)
 
 def suggest_center(m: Model, width_mm: float, *, preferred_mm: float | None = None) -> float:
     _finite_positive(width_mm, 'width_mm')
@@ -341,3 +357,50 @@ def set_handing(m: Model, door_id: str, handing: str) -> Model:
     if handing not in ('LEFT', 'RIGHT'):
         raise ModelError('Handing must be LEFT or RIGHT / 开向须为左铰或右铰')
     return _replace_door(m, replace(_door(m, door_id), handing=handing))
+
+
+# Component parameters are shared rules plus explicit occurrence overrides.
+# The occurrence never changes definition_id merely because it has a local value.
+_PART_FIELDS = {'FRAME': ('frame_section_mm', 'frame_section_override_mm'),
+                'LEAF': ('leaf_thickness_mm', 'leaf_thickness_override_mm')}
+
+
+def effective_definition(m: Model, door_id: str) -> DoorDefinition:
+    d = _door(m, door_id)
+    f = m.definitions[d.definition_id]
+    return replace(f,
+        frame_section_mm=f.frame_section_mm if d.frame_section_override_mm is None else d.frame_section_override_mm,
+        leaf_thickness_mm=f.leaf_thickness_mm if d.leaf_thickness_override_mm is None else d.leaf_thickness_override_mm)
+
+
+def set_component_part(m: Model, door_id: str, part: str, value_mm: float, *, scope: str) -> Model:
+    d = _door(m, door_id)
+    if part not in _PART_FIELDS or scope not in ('INSTANCE', 'DEFINITION'):
+        raise ModelError('Choose FRAME/LEAF and INSTANCE/DEFINITION explicitly')
+    _finite_positive(value_mm, 'component part')
+    shared, local = _PART_FIELDS[part]
+    if scope == 'INSTANCE':
+        return _replace_door(m, replace(d, **{local: float(value_mm)}))
+    f = m.definitions[d.definition_id]
+    if getattr(f, shared) == value_mm:
+        return m
+    definitions = dict(m.definitions)
+    definitions[f.id] = replace(f, **{shared: float(value_mm)})
+    return validate(replace(m, definitions=definitions, revision=m.revision+1))
+
+
+def reset_component_part(m: Model, door_id: str, part: str) -> Model:
+    if part not in _PART_FIELDS:
+        raise ModelError('Unknown component part')
+    return _replace_door(m, replace(_door(m, door_id), **{_PART_FIELDS[part][1]: None}))
+
+
+def delete_doors(m: Model, door_ids: Iterable[str], *, delete_notes: bool = False) -> Model:
+    ids = set(door_ids)
+    if not ids or not ids <= m.doors.keys():
+        raise ModelError('Select existing door instances to delete')
+    notes = {k:n for k,n in m.notes.items() if n.door_id not in ids}
+    if len(notes) != len(m.notes) and not delete_notes:
+        raise ModelError('门包含人工说明；须明确确认同时删除关联说明')
+    return validate(replace(m, doors={k:d for k,d in m.doors.items() if k not in ids},
+                            notes=notes, revision=m.revision+1))

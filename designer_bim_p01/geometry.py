@@ -80,7 +80,7 @@ def model_parts(m: core.Model) -> tuple[Box, ...]:
         left,right = d.center_x_mm-d.width_mm/2,d.center_x_mm+d.width_mm/2
         result.append(Box(f'wall.pier-before-{d.id}', 'wall', '', (last,-depth,0), (left,depth,m.wall.height_mm)))
         result.append(Box(f'wall.head-{d.id}', 'wall', '', (left,-depth,d.height_mm), (right,depth,m.wall.height_mm)))
-        f = m.definitions[d.definition_id]
+        f = core.effective_definition(m,d.id)
         s,c = f.frame_section_mm,f.clearance_mm
         result.extend((
             Box(f'{d.id}.jamb-left','frame',d.id,(left,-depth,0),(left+s,depth,d.height_mm)),
@@ -119,7 +119,7 @@ def drawing(m: core.Model, view: str) -> Drawing:
         rect('wall.outer',0,0,m.wall.length_mm,m.wall.height_mm,'outline',width=18)
         title_y = m.wall.height_mm+540
     for d in m.doors.values():
-        f=m.definitions[d.definition_id]; s=f.frame_section_mm; c=f.clearance_mm
+        f=core.effective_definition(m,d.id); s=f.frame_section_mm; c=f.clearance_mm
         left,right=d.center_x_mm-d.width_mm/2,d.center_x_mm+d.width_mm/2
         if view == 'PLAN':
             rect(f'{d.id}.jamb-left',left,-depth,left+s,depth,'cut',d.id,20)

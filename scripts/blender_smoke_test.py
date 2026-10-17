@@ -22,7 +22,7 @@ def run(output):
     assert scene is bpy.context.scene
     owner=scene[addon.OWNER_KEY]
     def obj(key):
-        return next(o for o in scene.objects if o.get('dbim_key')==key and o.get('dbim_owner')==owner)
+        return next(o for o in addon._objects(scene) if o.get('dbim_key')==key and o.get('dbim_owner')==owner)
     assert len(addon.get_model(scene).doors)==3
     addon.select_door(bpy.context,'door-01')
     assert bpy.ops.dbim.set_width('EXEC_DEFAULT',door_id='door-01',width_mm=1200,scope='INSTANCE') == {'FINISHED'}

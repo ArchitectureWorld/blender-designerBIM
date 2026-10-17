@@ -1,8 +1,8 @@
-# DesignerBIM P01 — 门组件二维／三维联动原型
+# DesignerBIM P01 — 整门组件封装
 
-**v0.2.0 · Blender 5.2.2 · 测试候选版，不是生产 BIM 软件。**
+**v0.3.0 · Blender 5.2.2 · 测试候选版，不是生产 BIM 软件。**
 
-从固定三樘门演示推进到可编辑门实例：新增／复制、沿墙精确定位、门高与左右开向，并同步真实墙洞、三维、平面、立面和尺寸。扩展 ID 与更新地址不变。
+本轮修复：门框与门扇不再作为散件平铺到项目场景。外部操作一樘门，进入后才选内部部件；二维图纸仍关联同一工程实例。
 
 ## 更新
 
@@ -10,68 +10,58 @@
 https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json
 ```
 
-已安装远程版：保存并另存 `.blend` 备份，在 **编辑 → 偏好设置 → 获取扩展 → 检查更新** 中更新 DesignerBIM，再重启 Blender。不要添加第二个存储库，也不要同时启用本地旧版与远程版。
+已安装远程版：另存 `.blend` 备份 → 获取扩展 → 检查更新 → DesignerBIM 0.3.0 → 重启。不添加第二份插件。
 
 第一次使用：添加上述远程存储库并安装；三维视图按 **N → DesignerBIM → 创建原型场景 → 三视图排布**。创建独立场景，不删除原场景。
 
-[v0.2.0 发布](https://github.com/ArchitectureWorld/blender-designerBIM/releases/tag/v0.2.0) · [安装包](https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.2.0/designer_bim_p01-0.2.0-blender5.2.2.zip) · [源码包](https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.2.0/designer_bim_p01-0.2.0-source.zip)
+[v0.3.0发布](https://github.com/ArchitectureWorld/blender-designerBIM/releases/tag/v0.3.0) · [完整验收和限制](docs/releases/v0.3.0.md)
 
-## 本轮直接测试这条流程
+## 本轮先测这五步
 
-在新的示例场景中：
-
-| 操作 | 观察 |
+| 操作 | 必须观察到 |
 |---|---|
-| 选 D01 → 复制当前门 → 中心距墙左端 3000 mm | 出现 D04；源门不变，定义仍共享，人工说明不复制 |
-| 选 D04 → 精确定位 → 相对移动 +200 mm | 中心成为 3200 mm；墙洞、三维和平立面一起移动 |
-| D04 门洞高度设 2400 mm | 仅 D04 增高，立面显示 H 2400；门框截面不拉伸 |
-| D04 左右开向切到右铰 | 3D 门扇和平面开启弧切换铰链侧；不镜像整墙 |
-| 输入与 D02 重叠的位置，如 4500 mm | 拒绝修改；已有参数和人工说明不改变 |
-| D04 添加人工说明，再移动 -100 mm | 保留文字和人工排布位置，提示 REVIEW；只有人工确认才消除 |
-| 保存重开，再统一修改门框截面为 80 mm | 新增门、独立尺寸、开向与说明仍在；共享修改不重置门宽门高 |
+| 点击门框或门扇 | 只选中D01一个集合实例；MODEL列表不再平铺门零件 |
+| Tab进入内部→选门框→编辑参数→仅当前实例80mm | D01门框80，其他门仍60；二维同步，定义ID仍共享 |
+| 退出，在D02内部修改共享门框70mm | D02/D03变70；D01保留局部80；恢复继承后D01也变70 |
+| 复制/沿墙定位/删除整门 | 新实例身份独立，墙洞及平立面同步；删除说明必须确认 |
+| 保存重开 | 默认回到整门模式；局部参数、身份、图纸关联和说明不丢失 |
 
-**新增门**与**复制当前门**是不同操作：新增可输入宽、高和铰链侧；复制继承源门的参数，并建议一个可用位置。位置以墙左端为原点，单位为 mm。这里只支持沿既有直墙的 X 方向定位，不是任意宿主放置。
+三维视图组件快捷键：Tab进入/退出，G沿墙精确定位对话框，Shift+D复制对话框，X/Delete删除确认。非组件对象走Blender原快捷键；混合/多门选择不会偷偷执行单门命令。当前不提供任意空间的自由移动。
 
-原有门宽操作、选中／同定义批改、蓝色宽度拖动手柄、人工说明编辑、SVG/JSON 导出继续保留。复制须用插件按钮，不支持原生 Shift+D 后维持工程身份。
+组件内部的编辑范围：门框截面、门扇厚度。门框/门扇可单独选中，但必须通过参数编辑。任意网格/拓扑修改尚不支持，检测到此类修改会停止刷新而不是静默覆盖。不要用Make Instances Real、Join、Apply Transform绕过组件系统；Outliner原生删除/复制也不是工程命令，请使用组件按钮或3D View快捷键。
 
-## 旧文件兼容
+原有门宽/门高、开向、人工说明、SVG/JSON输出继续保留。手工说明是图面内容，不与三维组件一起实体移动；位置保留，关联变化需复核。
 
-状态 schema 1 读取时迁移为 schema 2，新增 `handing`，默认左铰；保留实例 ID、定义、参数、说明和原有“已复核／待复核”状态，不因版本升级把所有说明误报为待复核。
+## 数据与兼容
 
-首次成功写入时，在场景 `dbim_p01_schema1_backup` 中保留原 v1 JSON。读取不会立刻覆盖原状态；下一次编辑或保存才写入 v2。**仍应另存原 .blend 备份**，隐藏 JSON 不是整个项目文件的备份。写入 v2 的文件不可用 v0.1.1 继续编辑；未知未来版本明确拒绝。
+JSON仍是本原型权威状态，schema1/2迁移到3。新增门框/门扇的实例级可空覆盖；未覆盖的参数继承共享定义。局部编辑不偷偷拆成新定义。复制继承参数与覆盖，不复制人工说明或已复核状态。
 
-## 验证边界
+旧散件场景在启用、载入或刷新时封装；schema1/2分别保留 `dbim_p01_schema1_backup` / `dbim_p01_schema2_backup`。它们只是JSON备份，不能代替完整 `.blend` 备份。schema3文件不能用旧插件继续编辑。
 
-- 纯 Python／静态／分发测试：`python -m pytest -q`。完整结果见 Actions。
-- 官方 Blender 5.2.2 CLI 包验证及真实 Blender 操作器、网格、迁移、保存重开：独立 `Blender 5.2.2 runtime` 工作流执行，结果与生成的 `.blend` / SVG 在其 artifacts；脚本存在不等于测试通过。
-- **Windows 图形界面的鼠标、对话框、Ctrl+Z、三视图视觉与实际项目交付仍需人工验收。**不能把无界面运行通过说成所有 GUI 通过。
-- 用户已确认 v0.1.1 可加载；尚未宣称整条五步运行验收完成。
+MODEL、PLAN、ELEVATION三个代理对应同一door_id，不是三份工程构件。私有集合是每实例的几何/表达缓存，不是独立族定义。本原型尚未定义最终生产库协议，也没有接入IFC。
 
-## 限制
-
-这是毫米参数＋JSON 场景状态原型，尚未接入 Bonsai/IFC 权威数据或正式构件库。不要把 schema 2 视为已稳定的生产资产协议，也不要用于施工图交付。
-
-门洞最小间距／墙端余量 120 mm、门框 15–150 mm 是**原型几何约束，不是建筑规范校核**。门高最高为墙高减120 mm。宽度和高度指门洞，不是净通行尺寸。
-
-本轮统一将三维门扇显示为向 +Y 开启90°，对应平面符号。左右铰链以从 -Y 看墙为准；立面按关闭外形作工程符号表达，并非当前开启姿态的几何投影。不支持内外开四向、自由角度、自动五金或任意墙体。
-
-平立面是门专用参数化表达，不是通用剖切引擎。人工说明过长、非常规尺寸导致图幅拥挤时仍需人工排版；SVG 为 A3、1:25 矢量**测试图**，输出前检查完整图幅。打印须100%，不能“适合页面”。
-
-生成物由参数控制；编辑网格会在刷新时被重建。人工说明可以原位改文字和 G 移动。没有打包字体，没有插件内网络请求或第二套更新器。
-
-## 开发
+## 验证
 
 ```bash
 python -m pytest -q
 python -m compileall -q designer_bim_p01 scripts tests
 python scripts/build_release.py --out dist
-blender --command extension validate dist/designer_bim_p01-0.2.0-blender5.2.2.zip
-blender --background --factory-startup --python-exit-code 1 --python scripts/blender_smoke_test.py -- /tmp/p01-original
-blender --background --factory-startup --python-exit-code 1 --python scripts/blender_instances_test.py -- /tmp/p01-instances
+blender --command extension validate dist/designer_bim_p01-0.3.0-blender5.2.2.zip
+blender -b --factory-startup --python-exit-code 1 --python scripts/blender_smoke_test.py -- reports/runtime-original
+blender -b --factory-startup --python-exit-code 1 --python scripts/blender_instances_test.py -- reports/runtime-instances
+blender -b --factory-startup --python-exit-code 1 --python scripts/blender_components_test.py -- reports/runtime-components
 ```
 
-`core.py`：版本化工程状态；`geometry.py`：三维与平立面生成；`addon.py`：场景、原有交互和持久化；`instance_tools.py`：新增实例编辑入口；`interaction.py`：宽度拖动数值映射。
+Blender实际运行结果见Actions，不能把纯逻辑或打包检查当作实机验收。GUI测试使用实际Blender视口选择/组件内部编辑和撤销；不能代替Windows本机鼠标及完整多视图体验验收。
 
-[本轮设计与边界](docs/superpowers/specs/2026-10-17-instance-edit.md) · [本轮发布说明](docs/releases/v0.2.0.md) · [历史 v0.1.1](docs/releases/v0.1.1.md)。旧 `docs/quickstart.html` 为首次原型指南，新增功能以本页为准。
+## 开发组织
 
-许可：GPL-3.0-or-later。官方参考：[扩展 CLI](https://docs.blender.org/manual/en/5.2/advanced/command_line/extension_arguments.html)；[5.2 LTS](https://www.blender.org/releases/5-2/)。
+- `core.py`：稳定实例身份、共享参数/局部覆盖、说明、验证及迁移。
+- `geometry.py`：门专用三维/二维生成；不是通用投影/剖切引擎。
+- `component_scene.py`：集合实例封装、私有部件、显式内部上下文、网格覆盖保护。
+- `component_tools.py`：整门生命周期、内部参数编辑与组件上下文快捷操作。
+- `addon.py` / `instance_tools.py`：场景、持久化、视图和实例参数操作。
+
+限制：单面既有直墙、门洞几何约束，不是结构/规范审查；当前原型二维SVG不能直接用于施工。库资产暂不规模化创建。无隐藏联网、上传或任意用户脚本执行。
+
+GPL-3.0-or-later，见LICENSE。两个项目独立，本库不包括铝型材家居平台。

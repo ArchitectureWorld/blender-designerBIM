@@ -16,7 +16,7 @@ def call(name, *args, **kwargs):
 def test_schema1_migration_retains_identities_and_review_status():
     raw = (Path(__file__).parent/'fixtures/schema1_notes.json').read_text(encoding='utf-8')
     m = core.loads(raw)
-    assert m.schema_version == 2
+    assert m.schema_version == core.SCHEMA_VERSION
     assert m.revision == 3
     assert set(m.doors) == {'door-01','door-02','door-03'}
     assert all(d.handing == 'LEFT' for d in m.doors.values())

@@ -22,8 +22,9 @@ from bpy_extras.io_utils import ExportHelper
 from mathutils import Matrix, Vector
 from mathutils.geometry import intersect_line_plane
 
-from . import core, geometry, interaction
+from . import core, geometry, interaction, component_scene
 from .instance_tools import INSTANCE_CLASSES, draw_instance_controls
+from .component_tools import COMPONENT_CLASSES, draw_component_controls, register_keymaps, unregister_keymaps
 
 TARGET_VERSION=(5,2,2)
 STATE_KEY='dbim_p01_state'
@@ -59,8 +60,14 @@ def selected_door_ids(context):
 
 
 def _objects(scene):
+    # Include private collection payloads, not only directly linked scene objects.
     owner=scene.get(OWNER_KEY)
-    return [o for o in scene.objects if o.get('dbim_owner')==owner]
+    return [o for o in bpy.data.objects if owner and o.get('dbim_owner')==owner]
+
+
+def _scene_objects(scene):
+    owner=scene.get(OWNER_KEY)
+    return [o for o in scene.objects if owner and o.get('dbim_owner')==owner]
 
 
 def _font():
@@ -135,6 +142,7 @@ class _Builder:
         o.lock_rotation=(True,True,True)
         o.lock_scale=(True,True,True)
         o.hide_select=(not door_id and role!='root') or role in ('title','subtitle','review','dimension')
+        component_scene.route_object(self.scene,o,self.collections[view],view,door_id,role)
         self.used.add(key)
         return o
 
@@ -154,11 +162,8 @@ class _Builder:
 def _render_scene(scene,m):
     b=_Builder(scene)
     for d in m.doors.values():
-        root=b.obj('ROOT.'+d.id,'MODEL','EMPTY','root',d.id)
-        root.location=(d.center_x_mm*.001,0,0)
-        root.empty_display_type='PLAIN_AXES'
-        root.empty_display_size=.15
-        root['dbim_definition']=d.definition_id
+        for view in ('MODEL','PLAN','ELEVATION'):
+            component_scene.setup_root(b,d,view,Vector((0,0,0)) if view=='MODEL' else OFFSETS[view])
     for p in geometry.model_parts(m):
         key='MODEL.'+p.key
         o=b.obj(key,'MODEL','MESH',p.role,p.door_id)
@@ -170,6 +175,7 @@ def _render_scene(scene,m):
         o.rotation_euler=(0,0,0)
         o.scale=(1,1,1)
         o.color=_COLORS[p.role]
+        o['dbim_generated_fingerprint']=component_scene.mesh_fingerprint(o)
         if p.door_id:
             o['dbim_definition']=m.doors[p.door_id].definition_id
     font=_font()
@@ -212,6 +218,7 @@ def _render_scene(scene,m):
                 o.lock_location=(False,False,True)
                 o.hide_select=False
     b.finish()
+    component_scene.sync_edit_visibility(scene,m,b.collections)
     _refresh_local_visibility(scene)
 
 
@@ -235,6 +242,7 @@ def apply_model(scene,m):
     """Commit JSON only after a successful rebuild; restore old output on failure."""
     global _BUSY
     core.validate(m)
+    component_scene.check_generated_geometry(_objects(scene))
     old=scene.get(STATE_KEY)
     # Snapshot manual text/location too: rolling back to stale JSON would erase
     # a native note edit made immediately before an unsuccessful rebuild.
@@ -242,8 +250,12 @@ def apply_model(scene,m):
     _BUSY=True
     try:
         _render_scene(scene,m)
-        if old and json.loads(old).get('schema_version')==1 and 'dbim_p01_schema1_backup' not in scene:
-            scene['dbim_p01_schema1_backup']=old
+        if old:
+            old_schema=json.loads(old).get('schema_version')
+            # Preserve dbim_p01_schema1_backup and dbim_p01_schema2_backup independently.
+            if old_schema in (1,2):
+                backup_key=f'dbim_p01_schema{old_schema}_backup'
+                if backup_key not in scene:scene[backup_key]=old
         scene[STATE_KEY]=core.dumps(m)
         scene[ERROR_KEY]=''
     except Exception as exc:
@@ -290,15 +302,17 @@ def select_door(context,door_id):
     m=get_model(context.scene)
     if door_id not in m.doors:
         raise core.ModelError('Unknown door')
-    for o in context.selected_objects:
-        o.select_set(False)
-    root=None
-    for o in _objects(context.scene):
-        if o.get('dbim_door')==door_id and not o.hide_select:
-            o.select_set(True)
-            if o.get('dbim_role')=='root':
-                root=o
+    if context.scene.get(component_scene.EDIT_KEY):
+        component_scene.check_generated_geometry(_objects(context.scene))
+        context.scene[component_scene.EDIT_KEY]=''
+        apply_model(context.scene,harvest_notes(context.scene))
+    context.view_layer.update()
+    for o in context.selected_objects:o.select_set(False)
+    mode=area_mode(context)
+    root=next((o for o in _scene_objects(context.scene) if o.get('dbim_door')==door_id
+               and o.get('dbim_role')=='root' and o.get('dbim_view')==mode),None)
     if root:
+        root.select_set(True)
         context.view_layer.objects.active=root
     context.scene['dbim_active_door']=door_id
 
@@ -332,7 +346,7 @@ def _refresh_local_visibility(scene):
                 if mode is None:
                     y=space.region_3d.view_location.y
                     mode='PLAN' if y>4 else ('ELEVATION' if y<-4 else 'MODEL')
-                for o in _objects(scene):
+                for o in _scene_objects(scene):
                     o.local_view_set(space,o.get('dbim_view')==mode)
 
 
@@ -372,7 +386,7 @@ def configure_view(context,area,mode,isolate=True):
                     if not space.local_view:
                         for o in context.selected_objects:
                             o.select_set(False)
-                        candidate=next((o for o in _objects(context.scene) if o.get('dbim_view')==mode and not o.hide_select),None)
+                        candidate=next((o for o in _scene_objects(context.scene) if o.get('dbim_view')==mode and not o.hide_select),None)
                         if candidate:
                             candidate.select_set(True)
                             context.view_layer.objects.active=candidate
@@ -801,7 +815,7 @@ class DBIM_PT_main(Panel):
 
     def draw(self,context):
         layout=self.layout
-        layout.label(text='P01  ·  v0.2.0  ·  基线 Blender 5.2.2')
+        layout.label(text='P01  ·  v0.3.0  ·  基线 Blender 5.2.2')
         if bpy.app.version!=TARGET_VERSION:
             box=layout.box(); box.alert=True
             box.label(text='当前版本不是验收基线 5.2.2',icon='ERROR')
@@ -828,7 +842,9 @@ class DBIM_PT_main(Panel):
             op=row.operator('dbim.select_door',text=d.tag,depress=(d.id==did))
             op.door_id=d.id
         box.label(text='选中：'+(', '.join(m.doors[k].tag for k in selected if k in m.doors) or '无'))
-        draw_instance_controls(layout,context,m,did)
+        draw_component_controls(layout,context,m,did)
+        if not context.scene.get(component_scene.EDIT_KEY):
+            draw_instance_controls(layout,context,m,did)
         box=layout.box()
         box.label(text='3  人工说明与复核')
         box.operator('dbim.add_note',icon='ADD')
@@ -848,7 +864,7 @@ class DBIM_PT_main(Panel):
         box.label(text=f'状态版本：{m.schema_version}  ·  修改：r{m.revision}')
         if context.scene.get(ERROR_KEY):
             layout.label(text=context.scene[ERROR_KEY][:70],icon='ERROR')
-        layout.label(text='退出编辑模式后再操作组件参数。')
+        layout.label(text='默认选择整门；Tab进入/退出组件内部。')
         layout.label(text='交互原型，非施工图生产工具。',icon='INFO')
 
 
@@ -873,8 +889,10 @@ def load_post(_dummy):
     for scene in bpy.data.scenes:
         if STATE_KEY in scene:
             try:
-                core.loads(scene[STATE_KEY])
-            except core.ModelError as exc:
+                m=core.loads(scene[STATE_KEY])
+                scene[component_scene.EDIT_KEY]=''
+                apply_model(scene,harvest_notes(scene))
+            except Exception as exc:
                 # Never silently migrate or overwrite unsupported future data.
                 scene[ERROR_KEY]=str(exc)
 
@@ -882,7 +900,7 @@ def load_post(_dummy):
 CLASSES=(DBIM_OT_create_demo,DBIM_OT_select_door,DBIM_OT_set_width,DBIM_OT_set_frame,
          DBIM_OT_add_note,DBIM_OT_edit_note,DBIM_OT_confirm_note,DBIM_OT_refresh,
          DBIM_OT_layout,DBIM_OT_view,DBIM_OT_export_svg,DBIM_OT_export_json,
-         DBIM_OT_drag_width,DBIM_GGT_width,*INSTANCE_CLASSES,DBIM_PT_main)
+         DBIM_OT_drag_width,DBIM_GGT_width,*INSTANCE_CLASSES,*COMPONENT_CLASSES,DBIM_PT_main)
 
 
 def register():
@@ -897,6 +915,9 @@ def register():
             bpy.app.handlers.save_pre.append(save_pre)
         if load_post not in bpy.app.handlers.load_post:
             bpy.app.handlers.load_post.append(load_post)
+        register_keymaps()
+        # Existing files can migrate immediately after a remote update/re-enable.
+        load_post(None)
     except Exception:
         for cls in reversed(registered):
             bpy.utils.unregister_class(cls)
@@ -904,6 +925,7 @@ def register():
 
 
 def unregister():
+    unregister_keymaps()
     for handlers,fn in ((bpy.app.handlers.save_pre,save_pre),(bpy.app.handlers.load_post,load_post)):
         if fn in handlers:
             handlers.remove(fn)

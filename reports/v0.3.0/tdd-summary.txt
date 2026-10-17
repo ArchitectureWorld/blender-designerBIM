@@ -1,0 +1,6 @@
+Baseline source 49f81260bff59bd7c824f8cc638bbc1e61274576: 72 pytest checks passed.
+Component domain tests initially failed: 18 failed (missing local overrides/deletion/schema3).
+After implementation: full suite 90 passed.
+Real Blender 5.2.2 baseline regression failed as intended: root.instance_type != COLLECTION.
+Evidence: Actions run 39040361779, job 117418403310; Blender 5.2.2 LTS hash d13f752e3b9c.
+New component runtime/GUI suites will be run on the actual branch before merge.
