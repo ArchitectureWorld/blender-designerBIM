@@ -199,7 +199,7 @@ def _render_scene(scene,m):
             c.body=t.text
             c.size=t.size_mm*.001
             c.align_x=t.align
-            c.align_y='BASELINE'
+            c.align_y='BOTTOM_BASELINE'
             c.extrude=0
             if font:
                 c.font=font
