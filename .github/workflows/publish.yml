@@ -36,11 +36,14 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA" || { echo 'main moved; rerun against its new head'; exit 1; }
-          if test -f bootstrap/source.tar.xz; then
+          if test -f bootstrap/source.sha256; then
             python - <<'PY'
           import hashlib, pathlib, tarfile
           root = pathlib.Path.cwd()
           archive = root / 'bootstrap/source.tar.xz'
+          parts = sorted((root / 'bootstrap').glob('source.part*'))
+          assert parts, 'Source import parts missing'
+          archive.write_bytes(b''.join(part.read_bytes() for part in parts))
           expected = (root / 'bootstrap/source.sha256').read_text().strip()
           assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected, 'Source import checksum mismatch'
           assert not (root / 'designer_bim_p01').exists(), 'Never overwrite existing source with a bootstrap import'
@@ -51,6 +54,8 @@ jobs:
                   assert path.parts[0] not in ('.git', '.github', 'bootstrap', 'dist'), 'Forbidden bootstrap path'
               bundle.extractall(root, filter='data')
           archive.unlink()
+          for part in parts:
+              part.unlink()
           (root / 'bootstrap/source.sha256').unlink()
           print('Verified original source and publication tooling imported')
           PY
