@@ -52,7 +52,12 @@ jobs:
         if: ${{ !cancelled() && steps.validate.outcome == 'success' }}
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
-        run: timeout 120 xvfb-run -a -s "-screen 0 1600x1000x24" blender --factory-startup --no-splash --python scripts/blender_components_gui_test.py -- "${{ runner.temp }}/blender-results/gui"
+        run: >-
+          timeout 120 xvfb-run -a -s "-screen 0 1600x1000x24"
+          blender --factory-startup
+          --python-expr "import bpy; bpy.context.preferences.view.show_splash = False"
+          --python scripts/blender_components_gui_test.py
+          -- "${{ runner.temp }}/blender-results/gui"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
