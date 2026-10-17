@@ -1,0 +1,72 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_copy_small_opening_keeps_local_frame_override_before_validation _____
+
+    def test_copy_small_opening_keeps_local_frame_override_before_validation():
+        m = core.set_component_part(core.demo_model(), 'door-01', 'FRAME', 15, scope='INSTANCE')
+        m = core.set_width(m, 'door-01', 350)
+        m = core.set_component_part(m, 'door-02', 'FRAME', 150, scope='DEFINITION')
+>       n = core.copy_door(m, 'door-01', 3000, instance_id='copy-local')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_component_copy_override.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+designer_bim_p01/core.py:314: in copy_door
+    n = add_door(m, source.definition_id, center_x_mm, width_mm=source.width_mm,
+designer_bim_p01/core.py:308: in add_door
+    return _replace_door(m, door)
+           ^^^^^^^^^^^^^^^^^^^^^^
+designer_bim_p01/core.py:285: in _replace_door
+    return validate(replace(m, doors=doors, revision=m.revision+1))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+m = Model(schema_version=3, revision=4, wall=Wall(id='wall-01', length_mm=9000.0, height_mm=3000.0, depth_mm=200.0), defin...2100.0, wall_id='wall-01', handing='LEFT', frame_section_override_mm=None, leaf_thickness_override_mm=None)}, notes={})
+
+    def validate(m: Model) -> Model:
+        if m.schema_version != SCHEMA_VERSION:
+            raise ModelError(f'Unsupported schema {m.schema_version}; current schema is {SCHEMA_VERSION}. 原文件未修改。')
+        if not isinstance(m.revision, int) or m.revision < 0:
+            raise ModelError('Invalid revision')
+        for key in ('length_mm', 'height_mm', 'depth_mm'):
+            _finite_positive(getattr(m.wall, key), key)
+        if not m.wall.id or not m.definitions:
+            raise ModelError('Wall, definition and instance identities are required')
+        tags = set()
+        for key, d in m.definitions.items():
+            if key != d.id or not key:
+                raise ModelError('Definition ID mismatch')
+            for prop in ('frame_section_mm', 'leaf_thickness_mm', 'clearance_mm'):
+                _finite_positive(getattr(d, prop), prop)
+            if not 15 <= d.frame_section_mm <= 150:
+                raise ModelError('Frame section / 门框截面须在 15–150 mm 内')
+            if d.leaf_thickness_mm > m.wall.depth_mm:
+                raise ModelError('Leaf thicker than host wall')
+        intervals = []
+        for key, d in m.doors.items():
+            if key != d.id or not key or d.definition_id not in m.definitions or d.wall_id != m.wall.id:
+                raise ModelError('Invalid definition/host reference / 构件定义或宿主关联无效')
+            if d.handing not in ('LEFT', 'RIGHT'):
+                raise ModelError('Handing must be LEFT or RIGHT / 开向须为左铰或右铰')
+            if not d.tag or d.tag in tags:
+                raise ModelError('Door tags must be unique')
+            tags.add(d.tag)
+            for prop in ('width_mm', 'height_mm', 'center_x_mm'):
+                _finite_positive(getattr(d, prop), prop)
+            for override in ('frame_section_override_mm', 'leaf_thickness_override_mm'):
+                value = getattr(d, override)
+                if value is not None:
+                    _finite_positive(value, override)
+            definition = effective_definition(m, d.id)
+            if not 15 <= definition.frame_section_mm <= 150:
+                raise ModelError('Local frame section must be 15–150 mm')
+            if definition.leaf_thickness_mm > m.wall.depth_mm:
+                raise ModelError('Local leaf thicker than host wall')
+            if d.width_mm < 300 or d.width_mm <= 2*definition.frame_section_mm+2*definition.clearance_mm+100:
+>               raise ModelError('Opening too small for frame and leaf / 门洞不足以容纳门框与门扇')
+E               designer_bim_p01.core.ModelError: Opening too small for frame and leaf / 门洞不足以容纳门框与门扇
+
+designer_bim_p01/core.py:119: ModelError
+=========================== short test summary info ============================
+FAILED tests/test_component_copy_override.py::test_copy_small_opening_keeps_local_frame_override_before_validation - designer_bim_p01.core.ModelError: Opening too small for frame and leaf / 门洞不足以容纳门框与门扇
+1 failed in 0.05s

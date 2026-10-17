@@ -310,15 +310,13 @@ def add_door(m: Model, definition_id: str, center_x_mm: float, *, width_mm: floa
 
 def copy_door(m: Model, door_id: str, center_x_mm: float, *, instance_id: str | None = None) -> Model:
     source = _door(m, door_id)
-    # A new occurrence shares its definition, never the original ID or approvals.
-    n = add_door(m, source.definition_id, center_x_mm, width_mm=source.width_mm,
-                 height_mm=source.height_mm, handing=source.handing, instance_id=instance_id)
-    new_id = next(iter(set(n.doors)-set(m.doors)))
-    doors = dict(n.doors)
-    doors[new_id] = replace(doors[new_id], frame_section_override_mm=source.frame_section_override_mm,
-                            leaf_thickness_override_mm=source.leaf_thickness_override_mm)
-    return validate(replace(n, doors=doors))
-
+    _finite_positive(center_x_mm, 'center_x_mm')
+    key = str(uuid4()) if instance_id is None else instance_id
+    if not isinstance(key, str) or not key or key in m.doors:
+        raise ModelError('Duplicate or invalid instance ID / 实例标识冲突')
+    # Validate only after carrying all local overrides into the new occurrence.
+    door = replace(source, id=key, tag=next_door_tag(m), center_x_mm=float(center_x_mm))
+    return _replace_door(m, door)
 
 def suggest_center(m: Model, width_mm: float, *, preferred_mm: float | None = None) -> float:
     _finite_positive(width_mm, 'width_mm')
