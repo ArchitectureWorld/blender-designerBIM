@@ -42,9 +42,10 @@ def run(output):
             proxies=[o for o in s.objects if o.get('dbim_view')==view and o.get('dbim_door')=='door-01' and o.instance_type=='COLLECTION']
             assert len(proxies)==1 and proxies[0].get('dbim_definition')=='door-def-01'
         bpy.context.view_layer.update()
-        evaluated=list(bpy.context.evaluated_depsgraph_get().object_instances)
-        parts=[i for i in evaluated if i.is_instance and i.parent and i.parent.original==r]
-        assert len(parts)>=4, 'Instance source does not render through dependency graph'
+        # Depsgraph iterator entries are ephemeral RNA wrappers, not persistent objects.
+        count=sum(1 for i in bpy.context.evaluated_depsgraph_get().object_instances
+                  if i.is_instance and i.parent and i.parent.original==r)
+        assert count>=4, 'Instance source does not render through dependency graph'
     check('one scene component with native instanced geometry and 2D proxies',encapsulation)
 
     def editing():

@@ -2,7 +2,7 @@
 
 Uses real VIEW_3D selection/depth buffer. Not a substitute for Windows UX testing.
 """
-import json, os, sys, traceback
+import json, os, sys, traceback, subprocess
 from pathlib import Path
 import bpy
 from mathutils import Vector
@@ -75,6 +75,18 @@ def tick():
                 assert abs(r.location.x-1.75)<1e-5 and r.instance_type=='COLLECTION'
                 state['checks'].append('actual Blender undo restores root and engineering state')
             elif step==7:
+                # Exercise the actual Object Mode keymap, not just operator invocation.
+                subprocess.run(['xdotool','mousemove',str(area.x+region.x+region.width//2),
+                                str(window.height-(area.y+region.y+region.height//2)),
+                                'key','Tab'],check=True)
+            elif step==8:
+                assert context.mode=='OBJECT' and context.scene.get('dbim_component_edit')=='door-01', (context.mode,context.scene.get('dbim_component_edit'))
+                state['checks'].append('OS keyboard Tab enters component')
+                subprocess.run(['xdotool','key','Tab'],check=True)
+            elif step==9:
+                assert context.mode=='OBJECT' and not context.scene.get('dbim_component_edit'), (context.mode,context.scene.get('dbim_component_edit'))
+                state['checks'].append('OS keyboard Tab exits without entering raw mesh edit')
+            elif step==10:
                 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'component-gui.blend'))
                 state['checks'].append('GUI scene saved')
             else:
