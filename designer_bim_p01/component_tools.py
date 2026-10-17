@@ -227,8 +227,11 @@ COMPONENT_CLASSES=(DBIM_OT_enter_component,DBIM_OT_exit_component,DBIM_OT_select
 def register_keymaps():
     kc=bpy.context.window_manager.keyconfigs.addon
     if not kc:return
-    km=kc.keymaps.new(name='Object Mode',space_type='EMPTY')
+    # Tab belongs to Blender's earlier Object Non-modal handler, not Object Mode.
+    mode_map=kc.keymaps.new(name='Object Mode',space_type='EMPTY')
+    nonmodal_map=kc.keymaps.new(name='Object Non-modal',space_type='EMPTY')
     for key,shift,action in (('TAB',False,'EDIT'),('G',False,'MOVE'),('D',True,'COPY'),('X',False,'DELETE'),('DEL',False,'DELETE')):
+        km=nonmodal_map if key=='TAB' else mode_map
         kmi=km.keymap_items.new('dbim.component_shortcut',key,'PRESS',shift=shift)
         kmi.properties.action=action;_KEYMAPS.append((km,kmi))
 
