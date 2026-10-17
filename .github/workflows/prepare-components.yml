@@ -1,0 +1,74 @@
+name: Prepare component source
+on:
+  push:
+    branches: [codex/p01-component-encapsulation-v0.3.0]
+    paths: ['.maintenance/**', '.github/workflows/prepare-components.yml']
+permissions:
+  contents: write
+concurrency:
+  group: prepare-components-v030
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/p01-component-encapsulation-v0.3.0
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply checksum-verified source patch only
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          import hashlib, json, lzma, pathlib, subprocess
+          root=pathlib.Path.cwd()
+          parts=[root/f'.maintenance/v030.part{i:03d}' for i in range(5)]
+          blob=b''.join(p.read_bytes() for p in parts)
+          assert hashlib.sha256(blob).hexdigest()=='9fa61e849ce6bff7606b639c40bd9f57bed921c1ce9b8d1934d569296d28915a'
+          raw=lzma.decompress(blob)
+          assert len(raw)<1000000
+          bundle=json.loads(raw)
+          assert bundle['base_sha']=='49f81260bff59bd7c824f8cc638bbc1e61274576'
+          subprocess.run(['git','merge-base','--is-ancestor',bundle['base_sha'],'HEAD'],check=True)
+          for name,expected in bundle['old_sha256'].items():
+              path=pathlib.PurePosixPath(name)
+              assert not path.is_absolute() and '..' not in path.parts
+              assert path.parts[0] in {'designer_bim_p01','tests','scripts','docs','reports'} or name=='README.md'
+              file=root/name
+              assert not file.is_symlink()
+              if expected is None:
+                  assert not file.exists(), f'Unexpected file: {name}'
+              else:
+                  assert hashlib.sha256(file.read_bytes()).hexdigest()==expected, f'Base mismatch: {name}'
+          for line in bundle['patch'].splitlines():
+              if line.startswith('+++ b/') or line.startswith('--- a/'):
+                  assert line[6:] in bundle['old_sha256']
+          patch=bundle['patch'].encode('utf-8')
+          subprocess.run(['git','apply','--check','-'],input=patch,check=True)
+          subprocess.run(['git','apply','-'],input=patch,check=True)
+          for name,expected in bundle['new_sha256'].items():
+              assert hashlib.sha256((root/name).read_bytes()).hexdigest()==expected, f'Result mismatch: {name}'
+          for part in parts:
+              part.unlink()
+          print('Verified source applied without any workflow modifications')
+          PY
+      - name: Run full regressions and package build
+        run: |
+          python -m pip install 'pytest>=8,<9'
+          python -m pytest -q
+          python -m compileall -q designer_bim_p01 scripts tests
+          python scripts/build_release.py --out dist
+      - name: Commit source only to development branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- designer_bim_p01 tests scripts docs reports README.md .maintenance
+          git diff --cached --stat
+          git commit -m 'feat: encapsulate door instances with explicit component editing v0.3.0'
+          git push origin HEAD:codex/p01-component-encapsulation-v0.3.0

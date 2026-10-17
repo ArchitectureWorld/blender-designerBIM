@@ -35,16 +35,24 @@ jobs:
       - name: Runtime system libraries
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y libx11-6 libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libice6 libegl1 libgl1
+          sudo apt-get install -y libx11-6 libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libice6 libegl1 libgl1 xvfb
       - name: Official extension validation
         id: validate
-        run: blender --command extension validate dist/designer_bim_p01-0.2.0-blender5.2.2.zip
+        run: blender --command extension validate dist/designer_bim_p01-*-blender5.2.2.zip
       - name: Original P01 integration in actual Blender
         if: ${{ !cancelled() && steps.validate.outcome == 'success' }}
         run: blender --background --factory-startup --python-exit-code 1 --python scripts/blender_smoke_test.py -- "${{ runner.temp }}/blender-results/original"
       - name: Instance edit and migration integration in actual Blender
         if: ${{ !cancelled() && steps.validate.outcome == 'success' }}
         run: blender --background --factory-startup --python-exit-code 1 --python scripts/blender_instances_test.py -- "${{ runner.temp }}/blender-results/instances"
+      - name: Component encapsulation in actual Blender
+        if: ${{ !cancelled() && steps.validate.outcome == 'success' }}
+        run: blender --background --factory-startup --python-exit-code 1 --python scripts/blender_components_test.py -- "${{ runner.temp }}/blender-results/components"
+      - name: Component picking and edit in actual GUI
+        if: ${{ !cancelled() && steps.validate.outcome == 'success' }}
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: timeout 120 xvfb-run -a -s "-screen 0 1600x1000x24" blender --factory-startup --no-splash --python scripts/blender_components_gui_test.py -- "${{ runner.temp }}/blender-results/gui"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
