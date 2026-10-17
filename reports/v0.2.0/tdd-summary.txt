@@ -1,0 +1,5 @@
+TDD evidence from this session
+State and geometry new regressions: 24 failed before implementation; 57 passed with original suite after implementation.
+Adapter static additions: 3 failed before adapter and real-runtime script existed; 60 passed after.
+Release version regressions: 3 failed, 7 passed before manifest bump; complete suite 70 passed after.
+No Blender mock is used to claim runtime acceptance. Local exact-version runtime was not run.

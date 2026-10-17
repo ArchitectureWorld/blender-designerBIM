@@ -1,15 +1,14 @@
 schema_version = "1.0.0"
 id = "designer_bim_p01"
-version = "0.1.1"
+version = "0.2.0"
 name = "DesignerBIM P01 — Door Lab"
 tagline = "Test shared door definitions and synchronized vector drawings"
 maintainer = "ArchitectureWorld"
-website = "https://github.com/ArchitectureWorld/blender-designerBIM"
 type = "add-on"
+website = "https://github.com/ArchitectureWorld/blender-designerBIM"
+tags = ["3D View", "Modeling"]
 blender_version_min = "5.2.2"
 blender_version_max = "5.3.0"
 license = ["SPDX:GPL-3.0-or-later"]
-tags = ["3D View", "Modeling"]
-
 [permissions]
-files = "Export user-requested SVG drawings and JSON state to a selected path"
+files = "Export SVG drawings and JSON to a user-selected path"

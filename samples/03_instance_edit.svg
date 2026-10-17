@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">
+<rect width="420" height="297" fill="white"/>
+<style>text{font-family:"Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif}</style>
+<rect x="10" y="10" width="400" height="277" fill="none" stroke="#adb3bb" stroke-width="0.3"/>
+<text x="18" y="22" font-size="5.5" fill="#172b40">DesignerBIM / DOOR PROTOTYPE 01</text>
+<text x="18" y="29" font-size="2.8" fill="#5d6874">Blender 5.2.2 target | Schema 2 | Revision 7 | 1:25 at 100% print</text>
+<text x="18" y="43" font-size="4.5" fill="#172b40">ELEVATION / r7</text>
+<g id="elevation">
+<polygon id="ELEVATION-wall.outer" data-door-id="" points="25.0000,185.0000 385.0000,185.0000 385.0000,65.0000 25.0000,65.0000" fill="none" stroke="#172b40" stroke-width="0.720"/>
+<polygon id="ELEVATION-door-01.opening" data-door-id="door-01" points="77.0000,185.0000 113.0000,185.0000 113.0000,101.0000 77.0000,101.0000" fill="none" stroke="#172b40" stroke-width="0.640"/>
+<polygon id="ELEVATION-door-01.clear-frame" data-door-id="door-01" points="79.4000,185.0000 110.6000,185.0000 110.6000,103.4000 79.4000,103.4000" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polygon id="ELEVATION-door-01.leaf" data-door-id="door-01" points="79.7200,184.6800 110.2800,184.6800 110.2800,103.7200 79.7200,103.7200" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-01.height-line" data-door-id="door-01" points="116.2000,185.0000 116.2000,101.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-01.height-tick-bottom" data-door-id="door-01" points="114.8000,186.4000 117.6000,183.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-01.height-tick-top" data-door-id="door-01" points="114.8000,102.4000 117.6000,99.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-01.width-line" data-door-id="door-01" points="77.0000,200.2000 113.0000,200.2000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-01.witness-left" data-door-id="door-01" points="77.0000,186.6000 77.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-01.tick-left" data-door-id="door-01" points="75.2000,202.0000 78.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-01.witness-right" data-door-id="door-01" points="113.0000,186.6000 113.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-01.tick-right" data-door-id="door-01" points="111.2000,202.0000 114.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polygon id="ELEVATION-door-02.opening" data-door-id="door-02" points="187.0000,185.0000 223.0000,185.0000 223.0000,101.0000 187.0000,101.0000" fill="none" stroke="#172b40" stroke-width="0.640"/>
+<polygon id="ELEVATION-door-02.clear-frame" data-door-id="door-02" points="189.4000,185.0000 220.6000,185.0000 220.6000,103.4000 189.4000,103.4000" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polygon id="ELEVATION-door-02.leaf" data-door-id="door-02" points="189.7200,184.6800 220.2800,184.6800 220.2800,103.7200 189.7200,103.7200" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-02.height-line" data-door-id="door-02" points="226.2000,185.0000 226.2000,101.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-02.height-tick-bottom" data-door-id="door-02" points="224.8000,186.4000 227.6000,183.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-02.height-tick-top" data-door-id="door-02" points="224.8000,102.4000 227.6000,99.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-02.width-line" data-door-id="door-02" points="187.0000,200.2000 223.0000,200.2000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-02.witness-left" data-door-id="door-02" points="187.0000,186.6000 187.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-02.tick-left" data-door-id="door-02" points="185.2000,202.0000 188.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-02.witness-right" data-door-id="door-02" points="223.0000,186.6000 223.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-02.tick-right" data-door-id="door-02" points="221.2000,202.0000 224.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polygon id="ELEVATION-door-03.opening" data-door-id="door-03" points="297.0000,185.0000 333.0000,185.0000 333.0000,101.0000 297.0000,101.0000" fill="none" stroke="#172b40" stroke-width="0.640"/>
+<polygon id="ELEVATION-door-03.clear-frame" data-door-id="door-03" points="299.4000,185.0000 330.6000,185.0000 330.6000,103.4000 299.4000,103.4000" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polygon id="ELEVATION-door-03.leaf" data-door-id="door-03" points="299.7200,184.6800 330.2800,184.6800 330.2800,103.7200 299.7200,103.7200" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-03.height-line" data-door-id="door-03" points="336.2000,185.0000 336.2000,101.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-03.height-tick-bottom" data-door-id="door-03" points="334.8000,186.4000 337.6000,183.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-03.height-tick-top" data-door-id="door-03" points="334.8000,102.4000 337.6000,99.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-03.width-line" data-door-id="door-03" points="297.0000,200.2000 333.0000,200.2000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-03.witness-left" data-door-id="door-03" points="297.0000,186.6000 297.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-03.tick-left" data-door-id="door-03" points="295.2000,202.0000 298.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-03.witness-right" data-door-id="door-03" points="333.0000,186.6000 333.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-03.tick-right" data-door-id="door-03" points="331.2000,202.0000 334.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polygon id="ELEVATION-door-04.opening" data-door-id="door-04" points="131.0000,185.0000 167.0000,185.0000 167.0000,89.0000 131.0000,89.0000" fill="none" stroke="#172b40" stroke-width="0.640"/>
+<polygon id="ELEVATION-door-04.clear-frame" data-door-id="door-04" points="133.4000,185.0000 164.6000,185.0000 164.6000,91.4000 133.4000,91.4000" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polygon id="ELEVATION-door-04.leaf" data-door-id="door-04" points="133.7200,184.6800 164.2800,184.6800 164.2800,91.7200 133.7200,91.7200" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-04.height-line" data-door-id="door-04" points="170.2000,185.0000 170.2000,89.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-04.height-tick-bottom" data-door-id="door-04" points="168.8000,186.4000 171.6000,183.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-04.height-tick-top" data-door-id="door-04" points="168.8000,90.4000 171.6000,87.6000" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="ELEVATION-door-04.width-line" data-door-id="door-04" points="131.0000,200.2000 167.0000,200.2000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="ELEVATION-door-04.witness-left" data-door-id="door-04" points="131.0000,186.6000 131.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-04.tick-left" data-door-id="door-04" points="129.2000,202.0000 132.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-door-04.witness-right" data-door-id="door-04" points="167.0000,186.6000 167.0000,203.8000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="ELEVATION-door-04.tick-right" data-door-id="door-04" points="165.2000,202.0000 168.8000,198.4000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="ELEVATION-note.instance-note.leader" data-door-id="door-04" points="245.0000,53.0000 167.0000,89.0000" fill="none" stroke="#b35424" stroke-width="0.200"/>
+<text id="ELEVATION-door-01.tag" data-door-id="door-01" x="95.000" y="95.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="95.000" dy="0.000">D01</tspan>
+</text>
+<text id="ELEVATION-door-01.height-label" data-door-id="door-01" x="95.000" y="89.400" font-size="3.60" text-anchor="middle" fill="#172b40">
+<tspan x="95.000" dy="0.000">H 2100</tspan>
+</text>
+<text id="ELEVATION-door-01.width-label" data-door-id="door-01" x="95.000" y="196.200" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="95.000" dy="0.000">900</tspan>
+</text>
+<text id="ELEVATION-door-02.tag" data-door-id="door-02" x="205.000" y="95.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="205.000" dy="0.000">D02</tspan>
+</text>
+<text id="ELEVATION-door-02.height-label" data-door-id="door-02" x="205.000" y="89.400" font-size="3.60" text-anchor="middle" fill="#172b40">
+<tspan x="205.000" dy="0.000">H 2100</tspan>
+</text>
+<text id="ELEVATION-door-02.width-label" data-door-id="door-02" x="205.000" y="196.200" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="205.000" dy="0.000">900</tspan>
+</text>
+<text id="ELEVATION-door-03.tag" data-door-id="door-03" x="315.000" y="95.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="315.000" dy="0.000">D03</tspan>
+</text>
+<text id="ELEVATION-door-03.height-label" data-door-id="door-03" x="315.000" y="89.400" font-size="3.60" text-anchor="middle" fill="#172b40">
+<tspan x="315.000" dy="0.000">H 2100</tspan>
+</text>
+<text id="ELEVATION-door-03.width-label" data-door-id="door-03" x="315.000" y="196.200" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="315.000" dy="0.000">900</tspan>
+</text>
+<text id="ELEVATION-door-04.tag" data-door-id="door-04" x="149.000" y="83.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="149.000" dy="0.000">D04</tspan>
+</text>
+<text id="ELEVATION-door-04.height-label" data-door-id="door-04" x="149.000" y="77.400" font-size="3.60" text-anchor="middle" fill="#172b40">
+<tspan x="149.000" dy="0.000">H 2400</tspan>
+</text>
+<text id="ELEVATION-door-04.width-label" data-door-id="door-04" x="149.000" y="196.200" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="149.000" dy="0.000">900</tspan>
+</text>
+<text id="ELEVATION-note.instance-note" data-door-id="door-04" x="245.000" y="53.000" font-size="4.40" text-anchor="start" fill="#825228">
+<tspan x="245.000" dy="0.000">人工节点 / KEEP</tspan>
+</text>
+<text id="ELEVATION-note.instance-note.review" data-door-id="door-04" x="245.000" y="47.000" font-size="3.80" text-anchor="start" fill="#b33b25">
+<tspan x="245.000" dy="0.000">[REVIEW / 需复核]</tspan>
+</text>
+</g>
+<text x="18" y="209" font-size="4.5" fill="#172b40">PLAN / r7</text>
+<g id="plan">
+<polygon id="PLAN-wall.pier-before-door-01" data-door-id="" points="25.0000,261.0000 77.0000,261.0000 77.0000,253.0000 25.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.880"/>
+<polygon id="PLAN-wall.pier-before-door-04" data-door-id="" points="113.0000,261.0000 131.0000,261.0000 131.0000,253.0000 113.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.880"/>
+<polygon id="PLAN-wall.pier-before-door-02" data-door-id="" points="167.0000,261.0000 187.0000,261.0000 187.0000,253.0000 167.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.880"/>
+<polygon id="PLAN-wall.pier-before-door-03" data-door-id="" points="223.0000,261.0000 297.0000,261.0000 297.0000,253.0000 223.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.880"/>
+<polygon id="PLAN-wall.pier-end" data-door-id="" points="333.0000,261.0000 385.0000,261.0000 385.0000,253.0000 333.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.880"/>
+<polygon id="PLAN-door-01.jamb-left" data-door-id="door-01" points="77.0000,261.0000 79.4000,261.0000 79.4000,253.0000 77.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-01.jamb-right" data-door-id="door-01" points="110.6000,261.0000 113.0000,261.0000 113.0000,253.0000 110.6000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-01.open-leaf" data-door-id="door-01" points="79.7200,253.0000 81.3200,253.0000 81.3200,222.4400 79.7200,222.4400" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polyline id="PLAN-door-01.swing" data-door-id="door-01" points="110.2800,253.0000 110.2432,251.5005 110.1328,250.0046 109.9492,248.5159 109.6928,247.0380 109.3642,245.5745 108.9641,244.1289 108.4936,242.7046 107.9538,241.3052 107.3459,239.9339 106.6715,238.5941 105.9322,237.2890 105.1297,236.0218 104.2660,234.7954 103.3432,233.6129 102.3635,232.4772 101.3292,231.3908 100.2428,230.3565 99.1071,229.3768 97.9246,228.4540 96.6982,227.5903 95.4310,226.7878 94.1259,226.0485 92.7861,225.3741 91.4148,224.7662 90.0154,224.2264 88.5911,223.7559 87.1455,223.3558 85.6820,223.0272 84.2041,222.7708 82.7154,222.5872 81.2195,222.4768 79.7200,222.4400" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="PLAN-door-01.width-line" data-door-id="door-01" points="77.0000,277.0000 113.0000,277.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="PLAN-door-01.witness-left" data-door-id="door-01" points="77.0000,262.6000 77.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-01.tick-left" data-door-id="door-01" points="75.2000,278.8000 78.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="PLAN-door-01.witness-right" data-door-id="door-01" points="113.0000,262.6000 113.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-01.tick-right" data-door-id="door-01" points="111.2000,278.8000 114.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polygon id="PLAN-door-02.jamb-left" data-door-id="door-02" points="187.0000,261.0000 189.4000,261.0000 189.4000,253.0000 187.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-02.jamb-right" data-door-id="door-02" points="220.6000,261.0000 223.0000,261.0000 223.0000,253.0000 220.6000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-02.open-leaf" data-door-id="door-02" points="189.7200,253.0000 191.3200,253.0000 191.3200,222.4400 189.7200,222.4400" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polyline id="PLAN-door-02.swing" data-door-id="door-02" points="220.2800,253.0000 220.2432,251.5005 220.1328,250.0046 219.9492,248.5159 219.6928,247.0380 219.3642,245.5745 218.9641,244.1289 218.4936,242.7046 217.9538,241.3052 217.3459,239.9339 216.6715,238.5941 215.9322,237.2890 215.1297,236.0218 214.2660,234.7954 213.3432,233.6129 212.3635,232.4772 211.3292,231.3908 210.2428,230.3565 209.1071,229.3768 207.9246,228.4540 206.6982,227.5903 205.4310,226.7878 204.1259,226.0485 202.7861,225.3741 201.4148,224.7662 200.0154,224.2264 198.5911,223.7559 197.1455,223.3558 195.6820,223.0272 194.2041,222.7708 192.7154,222.5872 191.2195,222.4768 189.7200,222.4400" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="PLAN-door-02.width-line" data-door-id="door-02" points="187.0000,277.0000 223.0000,277.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="PLAN-door-02.witness-left" data-door-id="door-02" points="187.0000,262.6000 187.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-02.tick-left" data-door-id="door-02" points="185.2000,278.8000 188.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="PLAN-door-02.witness-right" data-door-id="door-02" points="223.0000,262.6000 223.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-02.tick-right" data-door-id="door-02" points="221.2000,278.8000 224.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polygon id="PLAN-door-03.jamb-left" data-door-id="door-03" points="297.0000,261.0000 299.4000,261.0000 299.4000,253.0000 297.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-03.jamb-right" data-door-id="door-03" points="330.6000,261.0000 333.0000,261.0000 333.0000,253.0000 330.6000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-03.open-leaf" data-door-id="door-03" points="299.7200,253.0000 301.3200,253.0000 301.3200,222.4400 299.7200,222.4400" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polyline id="PLAN-door-03.swing" data-door-id="door-03" points="330.2800,253.0000 330.2432,251.5005 330.1328,250.0046 329.9492,248.5159 329.6928,247.0380 329.3642,245.5745 328.9641,244.1289 328.4936,242.7046 327.9538,241.3052 327.3459,239.9339 326.6715,238.5941 325.9322,237.2890 325.1297,236.0218 324.2660,234.7954 323.3432,233.6129 322.3635,232.4772 321.3292,231.3908 320.2428,230.3565 319.1071,229.3768 317.9246,228.4540 316.6982,227.5903 315.4310,226.7878 314.1259,226.0485 312.7861,225.3741 311.4148,224.7662 310.0154,224.2264 308.5911,223.7559 307.1455,223.3558 305.6820,223.0272 304.2041,222.7708 302.7154,222.5872 301.2195,222.4768 299.7200,222.4400" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="PLAN-door-03.width-line" data-door-id="door-03" points="297.0000,277.0000 333.0000,277.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="PLAN-door-03.witness-left" data-door-id="door-03" points="297.0000,262.6000 297.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-03.tick-left" data-door-id="door-03" points="295.2000,278.8000 298.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="PLAN-door-03.witness-right" data-door-id="door-03" points="333.0000,262.6000 333.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-03.tick-right" data-door-id="door-03" points="331.2000,278.8000 334.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polygon id="PLAN-door-04.jamb-left" data-door-id="door-04" points="131.0000,261.0000 133.4000,261.0000 133.4000,253.0000 131.0000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-04.jamb-right" data-door-id="door-04" points="164.6000,261.0000 167.0000,261.0000 167.0000,253.0000 164.6000,253.0000" fill="none" stroke="#172b40" stroke-width="0.800"/>
+<polygon id="PLAN-door-04.open-leaf" data-door-id="door-04" points="162.6800,253.0000 164.2800,253.0000 164.2800,222.4400 162.6800,222.4400" fill="none" stroke="#172b40" stroke-width="0.480"/>
+<polyline id="PLAN-door-04.swing" data-door-id="door-04" points="133.7200,253.0000 133.7568,251.5005 133.8672,250.0046 134.0508,248.5159 134.3072,247.0380 134.6358,245.5745 135.0359,244.1289 135.5064,242.7046 136.0462,241.3052 136.6541,239.9339 137.3285,238.5941 138.0678,237.2890 138.8703,236.0218 139.7340,234.7954 140.6568,233.6129 141.6365,232.4772 142.6708,231.3908 143.7572,230.3565 144.8929,229.3768 146.0754,228.4540 147.3018,227.5903 148.5690,226.7878 149.8741,226.0485 151.2139,225.3741 152.5852,224.7662 153.9846,224.2264 155.4089,223.7559 156.8545,223.3558 158.3180,223.0272 159.7959,222.7708 161.2846,222.5872 162.7805,222.4768 164.2800,222.4400" fill="none" stroke="#172b40" stroke-width="0.320"/>
+<polyline id="PLAN-door-04.width-line" data-door-id="door-04" points="131.0000,277.0000 167.0000,277.0000" fill="none" stroke="#172b40" stroke-width="0.240"/>
+<polyline id="PLAN-door-04.witness-left" data-door-id="door-04" points="131.0000,262.6000 131.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-04.tick-left" data-door-id="door-04" points="129.2000,278.8000 132.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<polyline id="PLAN-door-04.witness-right" data-door-id="door-04" points="167.0000,262.6000 167.0000,280.6000" fill="none" stroke="#172b40" stroke-width="0.200"/>
+<polyline id="PLAN-door-04.tick-right" data-door-id="door-04" points="165.2000,278.8000 168.8000,275.2000" fill="none" stroke="#172b40" stroke-width="0.360"/>
+<text id="PLAN-door-01.tag" data-door-id="door-01" x="95.000" y="264.600" font-size="4.00" text-anchor="middle" fill="#172b40">
+<tspan x="95.000" dy="0.000">D01</tspan>
+</text>
+<text id="PLAN-door-01.width-label" data-door-id="door-01" x="95.000" y="273.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="95.000" dy="0.000">900</tspan>
+</text>
+<text id="PLAN-door-02.tag" data-door-id="door-02" x="205.000" y="264.600" font-size="4.00" text-anchor="middle" fill="#172b40">
+<tspan x="205.000" dy="0.000">D02</tspan>
+</text>
+<text id="PLAN-door-02.width-label" data-door-id="door-02" x="205.000" y="273.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="205.000" dy="0.000">900</tspan>
+</text>
+<text id="PLAN-door-03.tag" data-door-id="door-03" x="315.000" y="264.600" font-size="4.00" text-anchor="middle" fill="#172b40">
+<tspan x="315.000" dy="0.000">D03</tspan>
+</text>
+<text id="PLAN-door-03.width-label" data-door-id="door-03" x="315.000" y="273.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="315.000" dy="0.000">900</tspan>
+</text>
+<text id="PLAN-door-04.tag" data-door-id="door-04" x="149.000" y="264.600" font-size="4.00" text-anchor="middle" fill="#172b40">
+<tspan x="149.000" dy="0.000">D04</tspan>
+</text>
+<text id="PLAN-door-04.width-label" data-door-id="door-04" x="149.000" y="273.000" font-size="4.80" text-anchor="middle" fill="#172b40">
+<tspan x="149.000" dy="0.000">900</tspan>
+</text>
+</g>
+<text x="18" y="293" font-size="2.8" fill="#8b3526">PROTOTYPE — not construction documentation | Review notes: 1</text>
+</svg>

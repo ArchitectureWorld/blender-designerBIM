@@ -1,118 +1,77 @@
-# DesignerBIM P01 — 门组件二维/三维联动原型
+# DesignerBIM P01 — 门组件二维／三维联动原型
 
-**版本：0.1.1｜开发基线：Blender 5.2.2｜状态：测试候选版，尚未完成实机验收。**
+**v0.2.0 · Blender 5.2.2 · 测试候选版，不是生产 BIM 软件。**
 
-这一轮只验证三个门实例的独立宽度、共享门框、平立面尺寸联动、人工说明保护与保存重开。它不是完整 BIM 软件，不是已定版组件库底层，也不改动铝型材或 Revit 项目。
+从固定三樘门演示推进到可编辑门实例：新增／复制、沿墙精确定位、门高与左右开向，并同步真实墙洞、三维、平面、立面和尺寸。扩展 ID 与更新地址不变。
 
-## Blender 远程安装与更新
-
-复制下面的完整地址（不是仓库首页，不是 ZIP 下载页）：
+## 更新
 
 ```text
 https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json
 ```
 
-1. Blender 5.2.2 → 编辑 → 偏好设置 → 获取扩展 / Get Extensions；允许在线访问。
-2. 打开右上方存储库 / Repositories，点击 `+` → 添加远程存储库 / Add Remote Repository，粘贴上方地址。
-3. 刷新后搜索 `DesignerBIM`，安装并启用 **DesignerBIM P01 — Door Lab**。
-4. 后续在获取扩展中“检查更新 / Check for Updates”，对该扩展点击更新。地址不变，无须每次下载新 ZIP；不要将“检查更新”理解为已自动替你安装更新。
-5. 保存当前文件，在三维视图按 `N` → **DesignerBIM** → **创建原型场景** → **三视图排布**。
+已安装远程版：保存并另存 `.blend` 备份，在 **编辑 → 偏好设置 → 获取扩展 → 检查更新** 中更新 DesignerBIM，再重启 Blender。不要添加第二个存储库，也不要同时启用本地旧版与远程版。
 
-本源公开，无须令牌，无须自行启用 GitHub Pages。网络环境仍须能够访问 GitHub Raw 与 Releases。
+第一次使用：添加上述远程存储库并安装；三维视图按 **N → DesignerBIM → 创建原型场景 → 三视图排布**。创建独立场景，不删除原场景。
 
-### 已经从磁盘安装过 v0.1.0
+[v0.2.0 发布](https://github.com/ArchitectureWorld/blender-designerBIM/releases/tag/v0.2.0) · [安装包](https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.2.0/designer_bim_p01-0.2.0-blender5.2.2.zip) · [源码包](https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.2.0/designer_bim_p01-0.2.0-source.zip)
 
-先另存 `.blend` 备份，停用旧的本地 DesignerBIM P01，重启 Blender，再从远程源安装/启用新版。**不要同时启用本地版和远程版**，以免相同操作器、面板和处理器重复注册。确认新版正常后可只卸载旧的 DesignerBIM；不要删除整个本地存储库或其他插件。
+## 本轮直接测试这条流程
 
-### 手动下载备用
+在新的示例场景中：
 
-- [v0.1.1 发布说明](https://github.com/ArchitectureWorld/blender-designerBIM/releases/tag/v0.1.1)
-- [Blender 安装包](https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.1.1/designer_bim_p01-0.1.1-blender5.2.2.zip)
-- [完整源码包](https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.1.1/designer_bim_p01-0.1.1-source.zip)
-- [安装与验收指南源码](docs/quickstart.html)
+| 操作 | 观察 |
+|---|---|
+| 选 D01 → 复制当前门 → 中心距墙左端 3000 mm | 出现 D04；源门不变，定义仍共享，人工说明不复制 |
+| 选 D04 → 精确定位 → 相对移动 +200 mm | 中心成为 3200 mm；墙洞、三维和平立面一起移动 |
+| D04 门洞高度设 2400 mm | 仅 D04 增高，立面显示 H 2400；门框截面不拉伸 |
+| D04 左右开向切到右铰 | 3D 门扇和平面开启弧切换铰链侧；不镜像整墙 |
+| 输入与 D02 重叠的位置，如 4500 mm | 拒绝修改；已有参数和人工说明不改变 |
+| D04 添加人工说明，再移动 -100 mm | 保留文字和人工排布位置，提示 REVIEW；只有人工确认才消除 |
+| 保存重开，再统一修改门框截面为 80 mm | 新增门、独立尺寸、开向与说明仍在；共享修改不重置门宽门高 |
 
-从磁盘安装的副本属于本地存储库，不会因为后来添加了远程源就自动变成远程管理副本。
+**新增门**与**复制当前门**是不同操作：新增可输入宽、高和铰链侧；复制继承源门的参数，并建议一个可用位置。位置以墙左端为原点，单位为 mm。这里只支持沿既有直墙的 X 方向定位，不是任意宿主放置。
 
-## 五步验收
+原有门宽操作、选中／同定义批改、蓝色宽度拖动手柄、人工说明编辑、SVG/JSON 导出继续保留。复制须用插件按钮，不支持原生 Shift+D 后维持工程身份。
 
-| 步骤 | 操作 | 必须观察到 |
-|---|---|---|
-| 1 | 选 D01，修改门洞宽度 900 → 1200，范围“只改当前实例” | D01 的三维、平面、立面和尺寸变化；D02/D03 仍 900；框截面仍 60 |
-| 2 | 统一修改共享门框 60 → 80 | 三樘门框都变化；门洞宽度仍为 1200、900、900 |
-| 3 | 选 D02，添加“人工收口说明”，所属视图选立面 | 立面出现可编辑说明；三维、二维对象都指向 D02 的同一实例 ID |
-| 4 | 把 D02 宽度改为 1100 | 说明文字与人工摆放位置保留；出现 REVIEW / 需复核；只有人工确认才清除 |
-| 5 | 保存 `.blend`，关闭重开，再改 D03 宽度 | 实例关联、二维尺寸、说明及复核状态不丢失；仍可继续修改 |
+## 旧文件兼容
 
-补充鼠标验收：蓝色右向箭头仅调整当前门宽，门中心不动；默认 10mm 步进，Shift 为 1mm，Esc/右键取消；完成后 Ctrl+Z 撤销。**拖动、取消、撤销及自动分屏尚未在 Blender 中验证。**
+状态 schema 1 读取时迁移为 schema 2，新增 `handing`，默认左铰；保留实例 ID、定义、参数、说明和原有“已复核／待复核”状态，不因版本升级把所有说明误报为待复核。
 
-## 已实现的代码范围
+首次成功写入时，在场景 `dbim_p01_schema1_backup` 中保留原 v1 JSON。读取不会立刻覆盖原状态；下一次编辑或保存才写入 v2。**仍应另存原 .blend 备份**，隐藏 JSON 不是整个项目文件的备份。写入 v2 的文件不可用 v0.1.1 继续编辑；未知未来版本明确拒绝。
 
-- 毫米单位的纯 Python 状态模型，稳定的定义/门实例/人工说明 ID；JSON schema 1，不自动吞掉未知版本。
-- 确定性墙体分段生成真实门洞，不是把门矩形贴在完整墙上。门框截面与门洞宽度分别控制。
-- 独立实例、选中实例批改、同定义实例批改；选中批改不偷偷创建新的联动类型。
-- 门参数生成平面、立面与真实门洞宽度尺寸；这是门专用的二维表达，不是任意三维模型剖切。
-- 人工说明文本/XY位置单独保存，在刷新、参数修改与保存前采集。相关实例、定义或宿主参数变化触发复核。
-- Blender 侧栏、宽度拖动、独立示例场景、三视图布局、SVG/JSON 用户指定路径导出。
-- A3、1:25 的矢量 SVG 测试图；网页预览中的图来自这个生成器，不是 Blender 截图。
+## 验证边界
 
-## 已验证 / 未验证
+- 纯 Python／静态／分发测试：`python -m pytest -q`。完整结果见 Actions。
+- 官方 Blender 5.2.2 CLI 包验证及真实 Blender 操作器、网格、迁移、保存重开：独立 `Blender 5.2.2 runtime` 工作流执行，结果与生成的 `.blend` / SVG 在其 artifacts；脚本存在不等于测试通过。
+- **Windows 图形界面的鼠标、对话框、Ctrl+Z、三视图视觉与实际项目交付仍需人工验收。**不能把无界面运行通过说成所有 GUI 通过。
+- 用户已确认 v0.1.1 可加载；尚未宣称整条五步运行验收完成。
 
-原始 v0.1.0 已运行 **33 项**纯逻辑/静态测试；v0.1.1 加入 **10 项**分发测试，本次准备阶段 `python -m pytest -q` 共 **43 项通过**。包括状态转换、几何体积和尺寸、稳定 ID、二维尺寸、SVG转义/布局、拖动数值映射与包元数据/语法检查。所有 Python 文件通过编译检查；两张实际 SVG 已渲染并检查，修复了页脚碰撞和默认引线穿过门编号的问题。
+## 限制
 
-**未运行：Blender 5.2.2 安装/注册、实际网格生成、侧栏/鼠标/撤销/分屏、`.blend` 保存重开、官方 extension validate。**开发容器没有 Blender/bpy，两台连接开发机访问失败，运行包获取也未成功。脚本或测试的存在不等于已经跑过。当前不能标记为“五步验收通过”。
+这是毫米参数＋JSON 场景状态原型，尚未接入 Bonsai/IFC 权威数据或正式构件库。不要把 schema 2 视为已稳定的生产资产协议，也不要用于施工图交付。
 
-## 重要限制
+门洞最小间距／墙端余量 120 mm、门框 15–150 mm 是**原型几何约束，不是建筑规范校核**。门高最高为墙高减120 mm。宽度和高度指门洞，不是净通行尺寸。
 
-- 仅一面直墙、三个预置门、固定门高与位置。不是任意墙体开洞工具；目前不支持原生 Shift+D 复制、原生变换或任意网格编辑后保持工程关联。
-- 请用本插件的参数入口修改门。生成的部件锁定变换；进入编辑模式修改其网格会在刷新时被重新生成。人工说明可原位编辑文本和 G 移动位置；删除说明的独立工作流尚未实现。
-- 当前是 JSON 场景状态原型，**尚未接入 Bonsai/IFC 权威数据、工程族库、通用图模引擎或施工图发布系统**。不要把 schema 1 当成最终生产库标准。
-- 默认墙垛最小 120mm、门框15—150mm等是测试模型的几何边界，不是建筑规范判定。
-- 尺寸是**门洞宽**，不是扣除框/缝后的有效通行宽。平面开启弧是符号表达，三维门扇采用关闭姿态。
-- 人工说明过长或移出图幅需要人工排版，尚无通用自动避让/分页。SVG测试图不用于施工；打印必须100%，不要“适合页面”。
-- 中文三维文本尝试使用用户系统已有字体；未打包任何字体文件。系统没有可加载的中文字体时，三维文本可能缺字，侧栏和SVG字体回退另行处理。
-- 扩展声明最低 5.2.2、排除 5.3+。其他 5.2 补丁也未验证；实机验收脚本只接受精确的 5.2.2。
+本轮统一将三维门扇显示为向 +Y 开启90°，对应平面符号。左右铰链以从 -Y 看墙为准；立面按关闭外形作工程符号表达，并非当前开启姿态的几何投影。不支持内外开四向、自由角度、自动五金或任意墙体。
 
-## 开发者测试
+平立面是门专用参数化表达，不是通用剖切引擎。人工说明过长、非常规尺寸导致图幅拥挤时仍需人工排版；SVG 为 A3、1:25 矢量**测试图**，输出前检查完整图幅。打印须100%，不能“适合页面”。
 
-纯 Python：
+生成物由参数控制；编辑网格会在刷新时被重建。人工说明可以原位改文字和 G 移动。没有打包字体，没有插件内网络请求或第二套更新器。
+
+## 开发
 
 ```bash
-python -m pip install pytest
-python -m pytest -q tests
+python -m pytest -q
+python -m compileall -q designer_bim_p01 scripts tests
+python scripts/build_release.py --out dist
+blender --command extension validate dist/designer_bim_p01-0.2.0-blender5.2.2.zip
+blender --background --factory-startup --python-exit-code 1 --python scripts/blender_smoke_test.py -- /tmp/p01-original
+blender --background --factory-startup --python-exit-code 1 --python scripts/blender_instances_test.py -- /tmp/p01-instances
 ```
 
-Blender 运行测试（新进程，使用 factory-startup，不要对生产文件运行）：
+`core.py`：版本化工程状态；`geometry.py`：三维与平立面生成；`addon.py`：场景、原有交互和持久化；`instance_tools.py`：新增实例编辑入口；`interaction.py`：宽度拖动数值映射。
 
-```bash
-blender --background --factory-startup --python-exit-code 1 --python scripts/blender_smoke_test.py -- reports/blender-runtime
-```
+[本轮设计与边界](docs/superpowers/specs/2026-10-17-instance-edit.md) · [本轮发布说明](docs/releases/v0.2.0.md) · [历史 v0.1.1](docs/releases/v0.1.1.md)。旧 `docs/quickstart.html` 为首次原型指南，新增功能以本页为准。
 
-Windows 也可调用 `scripts/run_blender_tests.ps1 -BlenderExe '实际的blender.exe路径'`。结果写入 `reports/blender-runtime/runtime-result.json`。脚本检查真实网格、操作器、注释、故障回退、保存重开；鼠标和布局仍须手动验收。
-
-生成 `.blend`：
-
-```bash
-blender --background --factory-startup --python-exit-code 1 --python scripts/create_demo.py -- samples/DesignerBIM_P01.blend
-```
-
-官方安装包验证（本环境未运行）：
-
-```bash
-blender --command extension validate designer_bim_p01-0.1.1-blender5.2.2.zip
-```
-
-## 源码组织与接续
-
-`core.py` 是工程状态；`geometry.py` 生成三维几何和二维表达；`interaction.py` 将拖动转换为宽度；`addon.py` 是 Blender 界面/持久化适配层。`samples` 是实际纯逻辑输出；`reports` 保留红/绿测试和当前验证边界。
-
-后续先完成 Blender 5.2.2 实机验收并处理报错，再扩展“路径风管/连接”验证。不要在当前原型直接大规模建库。源码与发布工作流现在由本仓库管理，版本包通过 GitHub Releases 分发。
-
-许可：GPL-3.0-or-later，见 LICENSE。无网络调用、无上传、无任意用户脚本执行。
-
-## 官方参考（原型参考，按目标版本另行实机核验）
-
-- Blender 5.2 LTS / 5.2.2：https://www.blender.org/releases/5-2/
-- Blender 5.2 API / Gizmo：https://docs.blender.org/api/5.2/bpy.types.Gizmo.html
-- Blender 5.2 API / Mesh：https://docs.blender.org/api/5.2/bpy.types.Mesh.html
-- 扩展打包与验证：https://docs.staging.blender.org/manual/en/latest/advanced/extensions/getting_started.html
-- 从磁盘安装：https://docs.staging.blender.org/manual/en/latest/editors/preferences/addons.html
+许可：GPL-3.0-or-later。官方参考：[扩展 CLI](https://docs.blender.org/manual/en/5.2/advanced/command_line/extension_arguments.html)；[5.2 LTS](https://www.blender.org/releases/5-2/)。
