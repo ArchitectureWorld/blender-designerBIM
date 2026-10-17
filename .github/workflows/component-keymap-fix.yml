@@ -1,0 +1,39 @@
+name: Component keymap correction
+on:
+  push:
+    branches: [codex/p01-component-encapsulation-v0.3.0]
+    paths: ['.github/workflows/component-keymap-fix.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/p01-component-encapsulation-v0.3.0
+      - name: Correct mapping and explicit X11 test focus
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('designer_bim_p01/component_tools.py');s=p.read_text()
+          old="km=kc.keymaps.new(name='3D View',space_type='VIEW_3D')"
+          assert old in s;s=s.replace(old,"km=kc.keymaps.new(name='Object Mode',space_type='EMPTY')");p.write_text(s)
+          p=Path('scripts/blender_components_gui_test.py');s=p.read_text()
+          old="                subprocess.run(['xdotool','mousemove',str(area.x+region.x+region.width//2),"
+          new="                wid=subprocess.check_output(['xdotool','search','--onlyvisible','--pid',str(os.getpid())],text=True).splitlines()[0]\n                subprocess.run(['xdotool','windowfocus','--sync',wid],check=True)\n                state['checks'].append('X11 focus set on Blender window')\n                subprocess.run(['xdotool','mousemove',str(region.x+region.width//2),"
+          assert old in s;s=s.replace(old,new).replace('str(window.height-(area.y+region.y+region.height//2))','str(window.height-(region.y+region.height//2))');p.write_text(s)
+          PY
+          test "$(git hash-object designer_bim_p01/component_tools.py)" = 7fbfbfe4f54c17ec3f74bb62e9b186c16430ac58
+          test "$(git hash-object scripts/blender_components_gui_test.py)" = be73fb3a4851c74949810d2eb0692ca84011cff9
+      - name: Check and commit source only
+        run: |
+          python -m pip install 'pytest>=8,<9'
+          python -m pytest -q
+          python -m compileall -q designer_bim_p01 scripts tests
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add designer_bim_p01/component_tools.py scripts/blender_components_gui_test.py
+          git commit -m 'fix: component shortcuts take precedence in Object Mode only'
+          git push origin HEAD:codex/p01-component-encapsulation-v0.3.0
