@@ -1,0 +1,147 @@
+name: Publish Blender extension
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'designer_bim_p01/blender_manifest.toml'
+      - '.github/workflows/publish.yml'
+      - 'bootstrap/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: designerbim-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'ArchitectureWorld/blender-designerBIM' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check checkout and import the verified initial source if present
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA" || { echo 'main moved; rerun against its new head'; exit 1; }
+          if test -f bootstrap/source.tar.xz; then
+            python - <<'PY'
+          import hashlib, pathlib, tarfile
+          root = pathlib.Path.cwd()
+          archive = root / 'bootstrap/source.tar.xz'
+          expected = (root / 'bootstrap/source.sha256').read_text().strip()
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected, 'Source import checksum mismatch'
+          assert not (root / 'designer_bim_p01').exists(), 'Never overwrite existing source with a bootstrap import'
+          with tarfile.open(archive, 'r:xz') as bundle:
+              for member in bundle.getmembers():
+                  path = pathlib.PurePosixPath(member.name)
+                  assert member.isfile() and not path.is_absolute() and '..' not in path.parts
+                  assert path.parts[0] not in ('.git', '.github', 'bootstrap', 'dist'), 'Forbidden bootstrap path'
+              bundle.extractall(root, filter='data')
+          archive.unlink()
+          (root / 'bootstrap/source.sha256').unlink()
+          print('Verified original source and publication tooling imported')
+          PY
+          fi
+      - name: Run all pure-Python and static tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'pytest>=8,<9'
+          python -m pytest -q --junitxml="$RUNNER_TEMP/tests.xml" | tee "$RUNNER_TEMP/tests.txt"
+          python -m compileall -q designer_bim_p01 scripts tests
+      - name: Build deterministic installation package, source package and index
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_release.py --out dist
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import tomllib
+          d = tomllib.load(open('designer_bim_p01/blender_manifest.toml', 'rb'))
+          print('version=' + d['version'])
+          print('tag=v' + d['version'])
+          print('installer=designer_bim_p01-' + d['version'] + '-blender5.2.2.zip')
+          PY
+      - name: Commit imported source without replacing any existing history
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if test -n "$(git status --porcelain)"; then
+            git add -A
+            git commit -m 'feat: import DesignerBIM P01 source, tests and release tooling [skip ci]'
+            git push origin HEAD:main
+          fi
+      - name: Publish versioned prerelease without overwriting existing assets
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --json isDraft > "$RUNNER_TEMP/existing-release.json" 2>/dev/null; then
+            python -c "import json; assert not json.load(open('$RUNNER_TEMP/existing-release.json'))['isDraft'], 'Existing draft: inspect before continuing'"
+            mkdir -p "$RUNNER_TEMP/existing-assets"
+            gh release download "$TAG" --dir "$RUNNER_TEMP/existing-assets" -p '*.zip' -p index.json -p SHA256SUMS -p build-verification.json
+            for file in dist/*.zip dist/index.json dist/SHA256SUMS dist/build-verification.json; do
+              cmp "$file" "$RUNNER_TEMP/existing-assets/$(basename "$file")" || { echo 'Published version differs: increment manifest version; do not overwrite'; exit 1; }
+            done
+          else
+            gh release create "$TAG" dist/*.zip dist/index.json dist/SHA256SUMS dist/build-verification.json \
+              --target "$(git rev-parse HEAD)" --draft --prerelease --latest=false \
+              --title "DesignerBIM P01 $TAG | Blender 5.2.2 test candidate" \
+              --notes-file "docs/releases/$TAG.md"
+            gh release edit "$TAG" --draft=false --prerelease --latest=false
+          fi
+      - name: Verify anonymous download before advertising the new version
+        run: |
+          python scripts/verify_remote.py --index-file dist/index.json \
+            --expected-version '${{ steps.version.outputs.version }}' --output "$RUNNER_TEMP/public-archive.json"
+      - name: Update the stable Blender repository index
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p extensions
+          cp dist/index.json extensions/index.json
+          git add extensions/index.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: publish Blender remote index v${{ steps.version.outputs.version }} [skip ci]'
+            git push origin HEAD:main
+          fi
+      - name: Verify the public repository and Blender-style query parameters
+        run: |
+          python scripts/verify_remote.py --expected-version '${{ steps.version.outputs.version }}' \
+            --output "$RUNNER_TEMP/public-repository.json"
+          {
+            echo '## Blender remote repository'
+            echo 'https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json'
+            echo ''
+            echo 'Public download, ZIP root, manifest, size and SHA-256 checked.'
+            echo 'Blender 5.2.2 runtime / mouse / undo / layout / save-reopen: NOT RUN.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: distribution-verification-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/tests.xml
+            ${{ runner.temp }}/tests.txt
+            ${{ runner.temp }}/public-archive.json
+            ${{ runner.temp }}/public-repository.json
+            dist/build-verification.json
+            dist/SHA256SUMS
+          if-no-files-found: warn
