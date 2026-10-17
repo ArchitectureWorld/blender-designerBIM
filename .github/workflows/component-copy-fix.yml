@@ -1,0 +1,64 @@
+name: Component copy boundary fix
+on:
+  push:
+    branches: [codex/p01-component-encapsulation-v0.3.0]
+    paths: ['.github/workflows/component-copy-fix.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/p01-component-encapsulation-v0.3.0
+      - name: Reproduce local-override copy regression then fix validated copy
+        run: |
+          python -m pip install 'pytest>=8,<9'
+          cat > tests/test_component_copy_override.py <<'PY'
+          """Copy validates the resolved component, never a temporary shared-only shape."""
+          from designer_bim_p01 import core
+
+
+          def test_copy_small_opening_keeps_local_frame_override_before_validation():
+              m = core.set_component_part(core.demo_model(), 'door-01', 'FRAME', 15, scope='INSTANCE')
+              m = core.set_width(m, 'door-01', 350)
+              m = core.set_component_part(m, 'door-02', 'FRAME', 150, scope='DEFINITION')
+              n = core.copy_door(m, 'door-01', 3000, instance_id='copy-local')
+              assert n.doors['copy-local'].width_mm == 350
+              assert n.doors['copy-local'].frame_section_override_mm == 15
+              assert core.effective_definition(n, 'copy-local').frame_section_mm == 15
+              assert n.doors['copy-local'].definition_id == m.doors['door-01'].definition_id
+              assert n.revision == m.revision + 1
+          PY
+          set +e
+          python -m pytest -q tests/test_component_copy_override.py > reports/v0.3.0/copy-boundary-red.txt 2>&1
+          status=$?
+          set -e
+          cat reports/v0.3.0/copy-boundary-red.txt
+          test "$status" = 1
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('designer_bim_p01/core.py');s=p.read_text();start=s.index('def copy_door(');end=s.index('\n\ndef suggest_center',start)
+          replacement="""def copy_door(m: Model, door_id: str, center_x_mm: float, *, instance_id: str | None = None) -> Model:
+              source = _door(m, door_id)
+              _finite_positive(center_x_mm, 'center_x_mm')
+              key = str(uuid4()) if instance_id is None else instance_id
+              if not isinstance(key, str) or not key or key in m.doors:
+                  raise ModelError('Duplicate or invalid instance ID / 实例标识冲突')
+              # Validate only after carrying all local overrides into the new occurrence.
+              door = replace(source, id=key, tag=next_door_tag(m), center_x_mm=float(center_x_mm))
+              return _replace_door(m, door)
+          """
+          p.write_text(s[:start]+replacement.rstrip()+s[end:])
+          PY
+          python -m pytest -q
+          python -m compileall -q designer_bim_p01 scripts tests
+      - name: Commit source and regression only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add designer_bim_p01/core.py tests/test_component_copy_override.py reports/v0.3.0/copy-boundary-red.txt
+          git commit -m 'fix: preserve local component parameters before validating a copy'
+          git push origin HEAD:codex/p01-component-encapsulation-v0.3.0
