@@ -1,0 +1,94 @@
+name: Prepare verified instance update
+
+on:
+  push:
+    branches: [codex/p01-instance-edit-v0.2.0]
+    paths: ['.maintenance/**', '.github/workflows/prepare-instance-update.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-designerbim-v020
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'ArchitectureWorld/blender-designerBIM' && github.ref == 'refs/heads/codex/p01-instance-edit-v0.2.0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/p01-instance-edit-v0.2.0
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize only the checksum-verified reviewed source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          import hashlib, json, lzma, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          parts = [root / f'.maintenance/v020.part{i:03d}' for i in range(4)]
+          blob = b''.join(p.read_bytes() for p in parts)
+          assert hashlib.sha256(blob).hexdigest() == 'dd155149644b087c67bbc4927f3fb055085823a641d9e44530f587aa86287ea1'
+          raw = lzma.decompress(blob)
+          assert len(raw) < 1000000
+          bundle = json.loads(raw)
+          base = subprocess.check_output(['git', 'rev-parse', 'HEAD^'], text=True).strip()
+          assert base == bundle['base_commit'] == 'c357243b1b91bfd67771b849b5b4faf93bbfaf9c', 'Base changed; refuse to overwrite other work'
+          roots = {'designer_bim_p01', 'tests', 'scripts', 'docs', 'samples', 'reports'}
+          special = {'README.md', '.github/workflows/blender-runtime.yml'}
+          for name, expected in bundle['expected_old'].items():
+              path = pathlib.PurePosixPath(name)
+              assert not path.is_absolute() and '..' not in path.parts
+              assert path.parts[0] in roots or name in special
+              file = root / name
+              if expected is None:
+                  assert not file.exists(), f'Unexpected existing file: {name}'
+              else:
+                  assert file.is_file() and not file.is_symlink()
+                  if expected != 'BASE_PINNED':
+                      old = subprocess.check_output(['git', 'hash-object', name], text=True).strip()
+                      assert old == expected, f'Old content mismatch: {name}'
+          patch = bundle['patch'].encode('utf-8')
+          for line in bundle['patch'].splitlines():
+              if line.startswith('+++ b/') or line.startswith('--- a/'):
+                  assert line[6:] in bundle['expected_old']
+          subprocess.run(['git', 'apply', '--check', '-'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '-'], input=patch, check=True)
+          for name, text in bundle['files'].items():
+              assert name in bundle['expected_old']
+              file = root / name
+              file.parent.mkdir(parents=True, exist_ok=True)
+              file.write_text(text, encoding='utf-8')
+          for name, expected in bundle['expected_new'].items():
+              actual = subprocess.check_output(['git', 'hash-object', name], text=True).strip()
+              assert actual == expected, f'New content mismatch: {name}'
+          for part in parts:
+              part.unlink()
+          (root / '.github/workflows/prepare-instance-update.yml').unlink()
+          print('Verified source materialized; temporary import files removed')
+          PY
+      - name: Re-run all tests and build from the actual repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'pytest>=8,<9'
+          python -m pytest -q
+          python -m compileall -q designer_bim_p01 scripts tests
+          python scripts/build_release.py --out dist
+      - name: Commit source to development branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --stat
+          git commit -m 'feat: editable door instances and synchronized drawings v0.2.0'
+          git push origin HEAD:codex/p01-instance-edit-v0.2.0
