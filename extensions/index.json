@@ -5,7 +5,7 @@
     {
       "schema_version": "1.0.0",
       "id": "designer_bim_p01",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "name": "DesignerBIM P01 — Door Lab",
       "tagline": "Test shared door definitions and synchronized vector drawings",
       "maintainer": "ArchitectureWorld",
@@ -21,11 +21,11 @@
       ],
       "blender_version_max": "5.3.0",
       "permissions": {
-        "files": "Export user-requested SVG drawings and JSON state to a selected path"
+        "files": "Export SVG drawings and JSON to a user-selected path"
       },
-      "archive_size": 34952,
-      "archive_hash": "sha256:6bb736999f7fceebe4e54865f5a6919ff4c18d1853d12ad183cba73fae595369",
-      "archive_url": "https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.1.1/designer_bim_p01-0.1.1-blender5.2.2.zip"
+      "archive_size": 38670,
+      "archive_hash": "sha256:e9c024be7511c350fed30aa33d16ec3c96fa28579831c922f9d41875551d4f00",
+      "archive_url": "https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/v0.2.0/designer_bim_p01-0.2.0-blender5.2.2.zip"
     }
   ]
 }
