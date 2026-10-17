@@ -1,0 +1,41 @@
+name: Component baseline regression
+on:
+  push:
+    branches: [codex/p01-component-encapsulation-v0.3.0]
+    paths: ['.github/workflows/component-red.yml']
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Obtain exact Blender and validate checksum
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          base=https://download.blender.org/release/Blender5.2
+          curl -fsSL "$base/blender-5.2.2-linux-x64.tar.xz" -o blender-5.2.2-linux-x64.tar.xz
+          curl -fsSL "$base/blender-5.2.2.sha256" -o SHA256SUMS
+          grep -E ' [*]?blender-5\.2\.2-linux-x64\.tar\.xz$' SHA256SUMS | sha256sum --check
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install runtime dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y libegl1 libgl1 libxi6 libxkbcommon0 libxxf86vm1
+      - name: Real regression should fail because internals are not encapsulated
+        run: |
+          cat > "$RUNNER_TEMP/check_component.py" <<'PY'
+          import sys, os, bpy
+          sys.path.insert(0,os.getcwd())
+          from designer_bim_p01 import addon
+          assert bpy.app.version==(5,2,2)
+          addon.register()
+          s=addon.create_demo_scene(bpy.context)
+          root=next(o for o in s.objects if o.get('dbim_key')=='ROOT.door-01')
+          assert root.instance_type=='COLLECTION', 'REGRESSION: door root has no component collection'
+          assert not any(o.type=='MESH' and o.get('dbim_door') for o in s.objects), 'REGRESSION: component internals are flat scene objects'
+          addon.select_door(bpy.context,'door-01')
+          assert len(bpy.context.selected_objects)==1, 'REGRESSION: whole-door selection is a multi-object selection'
+          PY
+          blender --background --factory-startup --python-exit-code 1 --python "$RUNNER_TEMP/check_component.py"
