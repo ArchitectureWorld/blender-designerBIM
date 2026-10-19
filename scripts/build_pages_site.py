@@ -11,7 +11,7 @@ import json
 import shutil
 from pathlib import Path
 
-from verify_remote import validate_download
+from scripts.verify_remote import validate_download
 
 PAGES_BASE = "https://architectureworld.github.io/blender-designerBIM"
 
