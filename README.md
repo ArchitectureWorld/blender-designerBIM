@@ -6,9 +6,15 @@
 
 ## 更新
 
+**GitHub Pages 远程扩展仓库（推荐）**
+
 ```text
-https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json
+https://architectureworld.github.io/blender-designerBIM/index.json
 ```
+
+首次部署前，仓库管理员需在 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**；随后在 Actions 里运行一次 **Deploy DesignerBIM extension repository to GitHub Pages**。后续正式发布自动同步到 Pages，`index.json` 和插件 ZIP 均由 `architectureworld.github.io` 提供。原始 `raw.githubusercontent.com` 地址继续作为备用，不影响已有发布包。
+
+从旧远程仓库迁移时，请**编辑原仓库的 URL**，不要另添加一份相同扩展，避免安装重复。
 
 已安装远程版：另存 `.blend` 备份 → 获取扩展 → 检查更新 → DesignerBIM 0.3.0 → 重启。不添加第二份插件。
 
