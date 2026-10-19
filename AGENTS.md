@@ -5,8 +5,8 @@
 - Current P01 is a bounded JSON-backed door/drawing interaction prototype, not IFC-native production BIM or a stable component-library contract.
 - Do not treat pure Python checks, ZIP validation or successful publishing as Blender runtime acceptance.
 - Protect user scenes and manual notes. Do not add hidden network behaviour, arbitrary code execution, or a second custom updater.
-- Keep extension ID `designer_bim_p01` and the remote source URL stable. Never replace the bytes of an already-published version.
+- Keep extension ID `designer_bim_p01` and the sole remote source URL `https://architectureworld.github.io/blender-designerBIM/index.json` stable. Never replace the bytes of an already-published version.
 - Changes: add regression tests first; run `python -m pytest -q` and compile checks. For runtime changes, use actual Blender 5.2.2 and report what was/was not tested.
-- Releases: increment `designer_bim_p01/blender_manifest.toml` version; add `docs/releases/vX.Y.Z.md`; merge to main. The publish workflow tests, builds, publishes a prerelease, verifies anonymous download and updates `extensions/index.json`.
+- Releases: increment `designer_bim_p01/blender_manifest.toml` version; add `docs/releases/vX.Y.Z.md`; merge to main. The single publish workflow tests, builds, publishes an immutable prerelease, mirrors the checked ZIP to GitHub Pages and verifies the public Pages index/ZIP. No tracked legacy index or parallel Pages workflow.
 - Keep the channel marked prerelease until the five-step real Blender acceptance is complete. Do not use GitHub `/releases/latest/download/` for this channel because it excludes prereleases.
-- Binary install packages belong in GitHub Releases. `scripts/build_release.py` is the one current build entry point; `scripts/build_package.py` is retained as a compatibility entry point.
+- Immutable binary release archives belong in GitHub Releases, with a checksum-identical mirror on Pages for Blender installation. `scripts/build_release.py` is the one current build entry point; `scripts/build_package.py` is retained as a compatibility entry point.
