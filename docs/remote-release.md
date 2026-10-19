@@ -1,30 +1,35 @@
 # Remote publication contract
 
-Stable feed: `https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json`
+**唯一对外稳定更新源：**
 
-This source is a public static JSON v1 Blender extension repository, not a Git clone endpoint. Installer archives are immutable per version under GitHub Releases. The listing is updated only after the new archive downloads anonymously and matches its byte size and SHA-256. No GitHub Pages configuration or user access token is required.
+```text
+https://architectureworld.github.io/blender-designerBIM/index.json
+```
 
-## Release a later build
+使用 GitHub Pages 发布 Blender v1 静态扩展仓库。页面内只发布当前版本的 `index.json`、同域名 ZIP 与 `.nojekyll`。发布前后验证 ZIP 字节数、SHA-256、ZIP 根目录和扩展 manifest。一条 `.github/workflows/publish.yml` 负责全部发布，不保留仓库内的旧版静态索引副本和第二套工作流。
 
-1. Develop on a branch, add tests, and run `python -m pytest -q`.
-2. Increase the manifest version. Do not recycle an already-published version.
-3. Add `docs/releases/vX.Y.Z.md`, including exact test coverage and known runtime limitations.
-4. Merge to main. Changes to the manifest trigger `.github/workflows/publish.yml`.
-5. Check the workflow's test and public-repository verification steps. The release is a prerelease until actual Blender acceptance justifies changing that policy.
+## 发布流程
 
-If publishing fails, the existing feed remains usable until the new archive has been verified. The public feed and GitHub prerelease are separate: a prerelease can be intentionally listed in this test repository. Do not use a GitHub `latest` shortcut, which need not select a prerelease.
+1. 在开发支线完成修改和 `python -m pytest -q`。
+2. 增加 `blender_manifest.toml` 的版本号。已经发布的版本和包不能覆盖。
+3. 新增相应的 `docs/releases/vX.Y.Z.md`，记录测试内容及 Blender 运行验收边界。
+4. 合并到 `main`，manifest 更新触发 `Publish Blender extension`。
+5. GitHub Actions 测试和打包，然后创建不可覆盖的 GitHub Release。
+6. 下载验证 Release ZIP；生成 Pages 站点并部署，最后通过公开 Pages URL 检查真实下载（含 Blender 平台/版本查询参数）。
+7. 在 Actions 中复核成功状态；不能把 Python 及分发检查当作 Blender 5.2.2 实机验收。
 
-## Verification
+首次部署需由仓库管理员在 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。未启用前不能宣称新 URL 可用。
 
-`python scripts/build_release.py --out dist` builds local ZIPs and index.
+## 开发/验证
 
-`python scripts/verify_remote.py --expected-version X.Y.Z` downloads the actual public index and archive, checks size, SHA-256, ZIP root and manifest consistency, and repeats the JSON request with Blender version/platform query parameters.
+```bash
+python -m pytest -q
+python scripts/build_release.py --out dist
+python -m scripts.build_pages_site --index dist/index.json --package dist/designer_bim_p01-0.3.1-blender5.2.2.zip --output site
+python scripts/verify_remote.py --expected-version 0.3.1
+```
 
-These checks do not execute Blender. Runtime tests remain `scripts/blender_smoke_test.py` and manual mouse/layout/undo verification in Blender 5.2.2.
-
-## Import provenance
-
-The initially empty repository may be populated through a checksummed tar.xz transfer of the previously delivered source plus release tooling. Only ordinary relative files are accepted; .git/.github paths are excluded from import; existing addon source is never overwritten. The import is committed as readable normal files, then the temporary transfer archive is removed. The source package preserves the original v0.1.0 reports as historical evidence.
+`build_release.py` 的中间版本索引仅用于核对 GitHub Release 的不可变归档；用户安装更新只使用 Pages。源代码中的实际 runtime 测试见 Blender 5.2.2 相关脚本与 Actions，不会因分发通过而被视为实机通过。
 
 ## Primary specifications
 
@@ -32,4 +37,4 @@ The initially empty repository may be populated through a checksummed tar.xz tra
 - https://developer.blender.org/docs/features/extensions/api_listing/v1/
 - https://docs.blender.org/manual/en/latest/editors/preferences/extensions.html
 - https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
-- https://cli.github.com/manual/gh_release_create
+- https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
