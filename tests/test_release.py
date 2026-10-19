@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 ROOT=Path(__file__).resolve().parents[1]
 REPO="ArchitectureWorld/blender-designerBIM"
-VERSION="0.3.0"
+VERSION="0.3.1"
 
 def builder():
     path=ROOT/'scripts/build_release.py'
@@ -73,3 +73,26 @@ def test_public_verifier_rejects_wrong_expected_version(tmp_path):
     r=builder().build_release(ROOT,tmp_path,REPO); listing=json.loads(r['index'].read_text())
     with pytest.raises(ValueError):
         verifier().validate_download(listing,r['installer'].read_bytes(),'9.9.9')
+
+
+def test_pages_mirror_is_single_verified_feed(tmp_path):
+    from scripts.build_pages_site import PAGES_BASE, build_pages_site
+    release = builder().build_release(ROOT, tmp_path / "dist", REPO)
+    site = build_pages_site(release["index"], release["installer"], tmp_path / "site")
+    listing = json.loads(site["index"].read_text(encoding="utf-8"))
+    entry = listing["data"][0]
+    assert entry["archive_url"] == f"{PAGES_BASE}/{site['installer'].name}"
+    assert entry["version"] == VERSION
+    assert site["installer"].read_bytes() == release["installer"].read_bytes()
+    verifier().validate_download(listing, site["installer"].read_bytes(), VERSION)
+    assert verifier().REPO_URL == f"{PAGES_BASE}/index.json"
+    assert not (ROOT / "extensions" / "index.json").exists()
+
+
+def test_pages_builder_rejects_wrong_installer_version(tmp_path):
+    from scripts.build_pages_site import build_pages_site
+    release = builder().build_release(ROOT, tmp_path / "dist", REPO)
+    fake_package = tmp_path / "designer_bim_p01-9.9.9-blender5.2.2.zip"
+    fake_package.write_bytes(release["installer"].read_bytes())
+    with pytest.raises(ValueError, match="filename/version"):
+        build_pages_site(release["index"], fake_package, tmp_path / "site")
