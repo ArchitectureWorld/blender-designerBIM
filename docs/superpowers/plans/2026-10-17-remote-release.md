@@ -4,7 +4,7 @@ Goal: publish existing P01 code to ArchitectureWorld/blender-designerBIM and pro
 
 User-approved scope: upload source and release for Blender remote updates. No feature redesign. Target Blender 5.2.2; keep the declared upper bound exclusive at 5.3.0. Existing runtime limitations remain explicit.
 
-Architecture: normal source tree on main; deterministic Python builder; GitHub Releases for immutable versioned ZIPs; main/extensions/index.json for a stable v1 listing. GitHub Actions tests before publishing and checks the public listing and ZIP after publishing. No separate updater inside Blender, no account token required by users, no Pages setup required.
+Architecture (revised 2026-10-19): normal source tree on main; deterministic Python builder; GitHub Releases for immutable versioned ZIPs; GitHub Pages is the single public static v1 listing and serves a checksum-identical ZIP mirror. A single publication workflow tests, releases and deploys; no separate updater or user account token. Repository Pages Source must be set to GitHub Actions.
 
 Tasks:
 - [x] Re-run imported 33 tests; preserve original test evidence.
