@@ -6,11 +6,15 @@ on:
     paths:
       - 'designer_bim_p01/blender_manifest.toml'
       - '.github/workflows/publish.yml'
+      - 'scripts/build_pages_site.py'
+      - 'scripts/verify_remote.py'
       - 'bootstrap/**'
   workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: designerbim-publication
@@ -19,6 +23,9 @@ concurrency:
 jobs:
   publish:
     if: github.repository == 'ArchitectureWorld/blender-designerBIM' && github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -116,26 +123,30 @@ jobs:
         run: |
           python scripts/verify_remote.py --index-file dist/index.json \
             --expected-version '${{ steps.version.outputs.version }}' --output "$RUNNER_TEMP/public-archive.json"
-      - name: Update the stable Blender repository index
-        shell: bash
+      - name: Prepare checksum-verified GitHub Pages repository
         run: |
-          set -euo pipefail
-          mkdir -p extensions
-          cp dist/index.json extensions/index.json
-          git add extensions/index.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'chore: publish Blender remote index v${{ steps.version.outputs.version }} [skip ci]'
-            git push origin HEAD:main
-          fi
+          python -m scripts.build_pages_site \
+            --index dist/index.json \
+            --package 'dist/${{ steps.version.outputs.installer }}' \
+            --output site
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static extension repository to Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
       - name: Verify the public repository and Blender-style query parameters
         run: |
           python scripts/verify_remote.py --expected-version '${{ steps.version.outputs.version }}' \
             --output "$RUNNER_TEMP/public-repository.json"
           {
             echo '## Blender remote repository'
-            echo 'https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json'
+            echo 'https://architectureworld.github.io/blender-designerBIM/index.json'
             echo ''
-            echo 'Public download, ZIP root, manifest, size and SHA-256 checked.'
+            echo 'Pages index, Pages ZIP download, manifest, size and SHA-256 checked.'
             echo 'Blender 5.2.2 runtime / mouse / undo / layout / save-reopen: NOT RUN.'
           } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4

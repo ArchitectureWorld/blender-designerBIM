@@ -1,20 +1,28 @@
 # DesignerBIM P01 — 整门组件封装
 
-**v0.3.0 · Blender 5.2.2 · 测试候选版，不是生产 BIM 软件。**
+**v0.3.1 · Blender 5.2.2 · 测试候选版，不是生产 BIM 软件。**
+
+本次 v0.3.1 仅迁移扩展分发地址，不改变 v0.3.0 的门组件功能。
 
 本轮修复：门框与门扇不再作为散件平铺到项目场景。外部操作一樘门，进入后才选内部部件；二维图纸仍关联同一工程实例。
 
 ## 更新
 
+**GitHub Pages 远程扩展仓库（推荐）**
+
 ```text
-https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json
+https://architectureworld.github.io/blender-designerBIM/index.json
 ```
 
-已安装远程版：另存 `.blend` 备份 → 获取扩展 → 检查更新 → DesignerBIM 0.3.0 → 重启。不添加第二份插件。
+首次部署前，仓库管理员需在 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**；新版本随现有 **Publish Blender extension** 工作流自动完成 Release 和 Pages 发布。`index.json` 和插件 ZIP 均由 `architectureworld.github.io` 提供，只有这一条对外远程更新地址。
+
+从旧远程仓库迁移时，请修改原有仓库 URL，或移除旧仓库（不要选择删除文件）再添加新仓库；避免同时注册两个同 ID 的扩展仓库。
+
+已安装远程版：另存 `.blend` 备份 → 更新仓库 URL → 获取扩展 → 检查更新 → DesignerBIM 0.3.1 → 重启。不添加第二份插件。
 
 第一次使用：添加上述远程存储库并安装；三维视图按 **N → DesignerBIM → 创建原型场景 → 三视图排布**。创建独立场景，不删除原场景。
 
-[v0.3.0发布](https://github.com/ArchitectureWorld/blender-designerBIM/releases/tag/v0.3.0) · [完整验收和限制](docs/releases/v0.3.0.md)
+[v0.3.1发布](https://github.com/ArchitectureWorld/blender-designerBIM/releases/tag/v0.3.1) · [v0.3.0功能验收和限制](docs/releases/v0.3.0.md)
 
 ## 本轮先测这五步
 

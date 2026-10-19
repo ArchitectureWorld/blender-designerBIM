@@ -11,7 +11,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-REPO_URL = "https://raw.githubusercontent.com/ArchitectureWorld/blender-designerBIM/main/extensions/index.json"
+REPO_URL = "https://architectureworld.github.io/blender-designerBIM/index.json"
 
 
 def validate_download(listing: dict, archive_bytes: bytes, expected_version: str) -> dict:
