@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "designer_bim_p01"
-version = "0.3.0"
+version = "0.3.1"
 name = "DesignerBIM P01 — Door Lab"
 tagline = "Test shared door definitions and synchronized vector drawings"
 maintainer = "ArchitectureWorld"
