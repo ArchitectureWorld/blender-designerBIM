@@ -1,0 +1,115 @@
+name: Deploy DesignerBIM extension repository to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pages.yml'
+      - 'extensions/index.json'
+  workflow_run:
+    workflows: ['Publish Blender extension']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# GitHub-token commits made by publish.yml cannot trigger a push workflow.
+# workflow_run publishes the index after the release workflow succeeds.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: designerbim-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'ArchitectureWorld/blender-designerBIM' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out published main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Prepare and validate the Pages mirror
+        id: bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          from urllib.request import Request, urlopen
+
+          sys.path.insert(0, str(Path("scripts").resolve()))
+          from verify_remote import validate_download
+
+          source = json.loads(Path("extensions/index.json").read_text(encoding="utf-8"))
+          records = source.get("data", [])
+          if len(records) != 1 or records[0].get("id") != "designer_bim_p01":
+              raise ValueError("Expected exactly one published DesignerBIM extension")
+          entry = records[0]
+          version = entry["version"]
+          release_url = entry["archive_url"]
+          prefix = "https://github.com/ArchitectureWorld/blender-designerBIM/releases/download/"
+          if not release_url.startswith(prefix):
+              raise ValueError("Refusing to mirror an untrusted release URL")
+          filename = Path(urlsplit(release_url).path).name
+          if filename != f"designer_bim_p01-{version}-blender5.2.2.zip":
+              raise ValueError("Published release filename/version mismatch")
+          request = Request(release_url, headers={"User-Agent": "DesignerBIM-Pages-Mirror/1.0"})
+          with urlopen(request, timeout=90) as response:
+              archive = response.read()
+          validate_download(source, archive, version)
+
+          site = Path("site")
+          site.mkdir(exist_ok=True)
+          (site / filename).write_bytes(archive)
+          (site / ".nojekyll").write_text("", encoding="utf-8")
+          entry["archive_url"] = f"https://architectureworld.github.io/blender-designerBIM/{filename}"
+          validate_download(source, archive, version)
+          (site / "index.json").write_text(
+              json.dumps(source, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+          )
+          (site / "index.html").write_text(
+              '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
+              '<meta name="viewport" content="width=device-width, initial-scale=1">'
+              '<title>DesignerBIM 扩展仓库</title>'
+              '<main style="max-width:660px;margin:10vh auto;padding:24px;'
+              'font:16px/1.7 system-ui,sans-serif">'
+              '<h1>DesignerBIM</h1><p>Blender 5.2.2 远程扩展仓库</p>'
+              '<p><a href="index.json">扩展仓库 index.json</a> · '
+              '<a href="https://github.com/ArchitectureWorld/blender-designerBIM">'
+              'GitHub 项目</a></p></main></html>', encoding="utf-8"
+          )
+          print(f"Prepared and checked DesignerBIM {version}: {filename}")
+          PY
+          echo "version=$(python -c 'import json; print(json.load(open("site/index.json"))["data"][0]["version"])')" >> "$GITHUB_OUTPUT"
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages files
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify anonymous Blender repository access
+        run: |
+          python scripts/verify_remote.py \
+            --url https://architectureworld.github.io/blender-designerBIM/index.json \
+            --expected-version '${{ steps.bundle.outputs.version }}' \
+            --output "$RUNNER_TEMP/pages-verification.json"
